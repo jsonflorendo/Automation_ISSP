@@ -274,6 +274,7 @@ def SI_000(driver):
         sign_in_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div[1]/div[1]/div[3]/form/div[5]/button')))
         sign_in_button.click()
 
+        time.sleep(1)
         email_address_error_message = wait.until(EC.presence_of_element_located((By.ID, 'error_email')))
         message_text = email_address_error_message.text.strip()
 
@@ -288,6 +289,7 @@ def SI_000(driver):
 
 
         # Test Case 18: Display Password error message.
+        time.sleep(1)
         password_error_message = wait.until(EC.presence_of_element_located((By.ID, 'error_pwd')))
         message_text = password_error_message.text.strip()
 
