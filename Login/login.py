@@ -11,18 +11,19 @@ def login():
 
     try: 
             
-        username_input = "admin@gmail.com"
+        email_input = "admin@gmail.com"
         password_input = "Dost@123"
 
-        time.sleep(10)
-        driver.find_element(By.ID,"username").send_keys(username_input)
+        time.sleep(1)
+        driver.find_element(By.ID,"email").send_keys(email_input)
 
-        time.sleep(10)
+        time.sleep(1)
         driver.find_element(By.ID,"password").send_keys(password_input)
 
-        time.sleep(10)
+        time.sleep(1)
         driver.find_element(By.XPATH, "//button[contains(text(), 'Sign in')]").click()
         print("Clicked Sign-in.")
+        time.sleep(5)
 
     except Exception as e:
     
