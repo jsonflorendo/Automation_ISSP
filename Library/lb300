@@ -155,7 +155,7 @@ def LIB_300():
         print("\nTest Case 6: Testing Sort Buttons for Funding Source Code")
         # Up arrow
         sort_up = wait.until(EC.presence_of_element_located((
-            By.XPATH, "(//span[contains(text(),'▲')])[1]"
+            By.CSS_SELECTOR, "td:nth-child(1) div:nth-child(1) div:nth-child(1) span:nth-child(2)"
         )))
         print("Testing Up sort button")
         sort_up.click()
@@ -164,7 +164,7 @@ def LIB_300():
         
         # Down arrow
         sort_down = wait.until(EC.presence_of_element_located((
-            By.XPATH, "(//span[contains(text(),'▼')])[1]"
+            By.XPATH, "//td[1]//div[1]//div[1]//span[2]"
         )))
         print("Testing Down sort button")
         sort_down.click()
@@ -176,7 +176,7 @@ def LIB_300():
         print("\nTest Case 7: Testing Sort Buttons for Funding Source")
         # Up arrow
         fs_sort_up = wait.until(EC.presence_of_element_located((
-            By.XPATH, "(//span[contains(text(),'▲')])[2]"
+            By.CSS_SELECTOR, "td:nth-child(2) div:nth-child(1) div:nth-child(1) span:nth-child(2)"
         )))
         print("Testing Up sort button")
         fs_sort_up.click()
@@ -185,13 +185,85 @@ def LIB_300():
         
         # Down arrow
         fs_sort_down = wait.until(EC.presence_of_element_located((
-            By.XPATH, "(//span[contains(text(),'▼')])[2]"
+            By.XPATH, "//td[2]//div[1]//div[1]//span[2]"
         )))
         print("Testing Down sort button")
         fs_sort_down.click()
         time.sleep(1.5)
         wait_for_loading_screen(wait)
         print("✅ Sort buttons are functional")
+
+        # Refresh page and click GAA row
+        print("\nRefreshing page and clicking GAA row")
+        driver.refresh()
+        time.sleep(2)
+        return_to_funding_source(driver, wait)
+        
+        # Click the GAA row
+        gaa_row = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//tr[.//td[text()='GAA']]"
+        )))
+        gaa_row.click()
+        time.sleep(1.5)
+
+        # Test Case 8: Store First Row Data
+        print("\nTest Case 8: Getting First Row Data")
+        # Wait for any loading screen to disappear first
+        wait_for_loading_screen(wait)
+        time.sleep(1)  # Extra stability wait
+        
+        # Get the first row
+        first_row = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//tr[@class='border mx-5 text-left align-text-top odd:white even:bg-gray-100 hover:bg-gray-200 text-sm']"
+        )))
+        
+        # Store row data before clicking
+        row_data = {
+            'code': first_row.find_element(By.XPATH, ".//td[1]").text,
+            'name': first_row.find_element(By.XPATH, ".//td[2]").text
+        }
+        
+        # Ensure element is clickable and scroll into view
+        wait_for_loading_screen(wait)
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", first_row)
+        time.sleep(1)  # Wait for scroll to complete
+        
+        # Click using JavaScript for better reliability
+        driver.execute_script("arguments[0].click();", first_row)
+        time.sleep(1.5)
+        print("✅ Successfully stored row data and opened modal")
+
+        # Test Case 9: Compare Funding Source Code
+        print("\nTest Case 9: Comparing Funding Source Code")
+        fs_code_input = wait.until(EC.presence_of_element_located((
+            By.ID, "fnd_code"
+        )))
+        if fs_code_input.get_attribute('value') == row_data['code']:
+            print("✅ Funding Source Code matches table row content")
+        else:
+            print("❌ Funding Source Code mismatch")
+
+        # Test Case 10: Compare Funding Source Name
+        print("\nTest Case 10: Comparing Funding Source Name")
+        fs_name_input = wait.until(EC.presence_of_element_located((
+            By.ID, "fnd_name"
+        )))
+        if fs_name_input.get_attribute('value') == row_data['name']:
+            print("✅ Funding Source Name matches table row content")
+        else:
+            print("❌ Funding Source Name mismatch")
+
+        # Test Case 11: Close (X) Button
+        print("\nTest Case 11: Testing Close (X) Button")
+        x_button = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']//button//div//*[name()='svg']"
+        )))
+        if x_button.is_displayed():
+            x_button.click()
+            time.sleep(1)
+            print("✅ Modal closed successfully using X button")
+        else:
+            print("❌ X button not displayed")
 
         print("\n--------------Test Completed--------------\n")
 

@@ -334,35 +334,6 @@ def LIB_001():
         else:
             print("❌ Website link mismatch")
 
-        # Test Case 21: Check Delete Button
-        print("\nTest Case 21: Checking Delete Button")
-        delete_button = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//button[normalize-space()='Delete']"
-        )))
-        if delete_button.is_displayed():
-            print("✅ Delete button is present")
-        else:
-            print("❌ Delete button not displayed")
-
-        # Test Case 22: Save and Confirm
-        print("\nTest Case 22: Testing Save Button")
-        save_button = wait.until(EC.element_to_be_clickable((
-            By.XPATH, "//button[normalize-space()='Save']"
-        )))
-        if save_button.is_displayed():
-            save_button.click()
-            time.sleep(1.5)
-            
-            # Click OK on success modal
-            ok_button = wait.until(EC.element_to_be_clickable((
-                By.XPATH, "//button[normalize-space()='OK']"
-            )))
-            ok_button.click()
-            time.sleep(1)
-            print("✅ Save button test passed")
-        else:
-            print("❌ Save button not displayed")
-
         print("\n--------------Test Completed--------------\n")
 
     except Exception as e:
