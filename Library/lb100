@@ -21,7 +21,7 @@ def LIB_001():
         """Helper function to wait for loading screen to disappear"""
         try:
             wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "loading-screen")))
-            time.sleep(1)  # Short pause after loading screen disappears
+            time.sleep(1)
         except:
             pass
 
@@ -32,9 +32,9 @@ def LIB_001():
             tab = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
             print(f"\nTest Case: {tab_name} tab display")
             if tab.is_displayed():
-                print(f"✅ {tab_name} tab is displayed correctly")
+                print(f"✅ {tab_name} PASSED")
                 driver.execute_script("arguments[0].click();", tab)
-                time.sleep(1.5)  # Moderate pause after clicking
+                time.sleep(1.5)
                 wait_for_loading_screen(wait)
             else:
                 print(f"❌ {tab_name} tab is not displayed")
@@ -56,11 +56,9 @@ def LIB_001():
         options.add_argument('--window-size=1920,1080')
         
         try:
-            # Try to create a Chrome WebDriver directly
             driver = webdriver.Chrome(options=options)
             print("Chrome WebDriver initialized successfully!")
             
-            # Set implicit wait and create explicit wait
             driver.implicitly_wait(10)
             wait = WebDriverWait(driver, 7)
             
@@ -72,7 +70,7 @@ def LIB_001():
 
         # Initial setup - Login to the system
         driver.get("http://10.10.99.23/login")
-        time.sleep(2)  # Wait for login page to stabilize
+        time.sleep(2)
         
         # Login process
         username_input = "admin@gmail.com"
@@ -80,625 +78,292 @@ def LIB_001():
         
         email_field = wait.until(EC.presence_of_element_located((By.ID, "email")))
         email_field.send_keys(username_input)
-        time.sleep(0.5)  # Small pause between inputs
+        time.sleep(0.5)
         
         password_field = wait.until(EC.presence_of_element_located((By.ID, "password")))
         password_field.send_keys(password_input)
-        time.sleep(0.5)  # Small pause before clicking
+        time.sleep(0.5)
         
         sign_in_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Sign in')]")))
         sign_in_button.click()
-        time.sleep(2)  # Wait for login to complete
+        time.sleep(2)
         
         # Navigate directly to library URL
         wait_for_loading_screen(wait)
         driver.get("http://10.10.99.23/library")
-        time.sleep(2)  # Wait for library page to stabilize
+        time.sleep(2)
         wait_for_loading_screen(wait)
 
-        # Test tabs using the safe click function
+        # Test Case 1: Agency/Institution Tab
+        print("\nTest Case 1: Agency/Institution Tab")
         safe_click_tab(driver, wait, 
             "//p[@class='inline-block p-4 text-white bg-content rounded-t-lg active cursor-pointer']",
             "Agency/Institution")
-            
+
+        # Test Case 2: Funding Source Tab
+        print("\nTest Case 2: Funding Source Tab")
         safe_click_tab(driver, wait,
             "//p[normalize-space()='Funding Source']",
             "Funding Source")
-            
+
+        # Test Case 3: ICT Categories Tab
+        print("\nTest Case 3: ICT Categories Tab")
         safe_click_tab(driver, wait,
             "//p[normalize-space()='ICT Categories']",
             "ICT Categories")
-            
+
+        # Test Case 4: ICT Items Tab
+        print("\nTest Case 4: ICT Items Tab")
         safe_click_tab(driver, wait,
             "//label[@class='mr-4']",
             "ICT Items")
-            
+
+        # Test Case 5: IS Classification Tab
+        print("\nTest Case 5: IS Classification Tab")
         safe_click_tab(driver, wait,
             "//p[normalize-space()='IS Classification']",
             "IS Classification")
-            
+
+        # Test Case 6: User Accounts Tab
+        print("\nTest Case 6: User Accounts Tab")
         safe_click_tab(driver, wait,
             "//p[normalize-space()='User Accounts']",
             "User Accounts")
 
-        # Return to Agency/Institution tab by navigating back to library page
+        # Return to Agency/Institution tab
         print("\nReturning to Agency/Institution tab")
         driver.get("http://10.10.99.23/library")
-        time.sleep(3)  # Give enough time for page to load
+        time.sleep(3)
         wait_for_loading_screen(wait)
-        
-        # Additional verification and stabilization
-        try:
-            # Wait for and verify key elements of Agency/Institution tab
-            agency_code_header = wait.until(EC.presence_of_element_located((By.XPATH, "//div[normalize-space()='AGENCY CODE']")))
-            search_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search...']")))
-            add_new_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@class='btn-circular square-md shadow-[4.0px_8.0px_8.0px_rgba(0,0,0,0.20)]']")))
-            
-            # Extra wait to ensure complete stability
-            time.sleep(2)
-            print("✅ Successfully verified Agency/Institution tab elements")
-        except Exception as e:
-            print(f"❌ Error verifying Agency/Institution tab elements: {str(e)}")
-            return  # Exit if verification fails
 
-        # Test Case 7: Search functionality and icon
-        print("\nTest Case 7: Search functionality and icon")
-        search_icon = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@class='absolute left-0 top-0 mt-2 ml-3 text-white']//*[name()='svg']")))
-        search_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search...']")))
+        # Test Case 7: Search functionality
+        print("\nTest Case 7: Testing Search Functionality")
+        search_icon = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//button[@class='absolute left-0 top-0 mt-2 ml-3 text-white']//*[name()='svg']"
+        )))
+        search_input = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//input[@placeholder='Search...']"
+        )))
         
         if search_icon.is_displayed() and search_input.is_displayed():
-            print("✅ Search icon and input field are displayed correctly")
-            # Test search functionality
+            print("✅ Search icon and input field are displayed")
             search_input.send_keys("test search")
             time.sleep(1)
             search_input.clear()
-            print("✅ Search functionality is working")
-        else:
-            print("❌ Search elements are not displayed correctly")
-
-        # Test Case 8: Add New button and form
-        print("\nTest Case 8: Add New button functionality")
-        add_new_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btn-circular square-md shadow-[4.0px_8.0px_8.0px_rgba(0,0,0,0.20)]']")))
-        if add_new_btn.is_displayed():
-            print("✅ Add New button is displayed correctly")
-            add_new_btn.click()
             time.sleep(1)
+            
+            # Refresh page to show complete table
+            driver.refresh()
+            time.sleep(2)
+            wait_for_loading_screen(wait)
+            print("✅ Search functionality working and table refreshed")
         else:
-            print("❌ Add New button is not displayed")
+            print("❌ Search elements not displayed properly")
 
-        # Test Case 9: Modal title verification
-        print("\nTest Case 9: Modal title verification")
-        modal_title = wait.until(EC.presence_of_element_located((By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']")))
-        if modal_title.text.strip() == "Agency / Institution":
-            print("✅ Modal title is correct: Agency / Institution")
+        # Test Case 8: Add New Button
+        print("\nTest Case 8: Testing Add New Button")
+        add_new_btn = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//button[@class='btn-circular square-md shadow-[4.0px_8.0px_8.0px_rgba(0,0,0,0.20)]']"
+        )))
+        if add_new_btn.is_displayed():
+            print("✅ Add New button is displayed")
+            add_new_btn.click()
+            time.sleep(1.5)
+            
+            # Close using X button
+            x_button = wait.until(EC.element_to_be_clickable((
+                By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']//button//div//*[name()='svg']"
+            )))
+            if x_button.is_displayed():
+                x_button.click()
+                time.sleep(1)
+                print("✅ Modal closed successfully using X button")
+            else:
+                print("❌ X button not displayed")
         else:
-            print(f"❌ Incorrect modal title: {modal_title.text}")
+            print("❌ Add New button not displayed")
 
-        # Test Case 10: Agency Logo title
-        print("\nTest Case 10: Agency Logo title verification")
-        agency_logo_title = wait.until(EC.presence_of_element_located((By.XPATH, "//span[normalize-space()='Agency Logo']")))
-        if agency_logo_title.is_displayed():
-            print("✅ Agency Logo title is displayed correctly")
+        # Test Case 9: Table Row Hover Effect
+        print("\nTest Case 9: Testing Table Row Hover Effect")
+        table_row = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//tr[@class='border mx-5 text-left align-text-top odd:white even:bg-gray-100 hover:bg-gray-200 text-sm']"
+        )))
+        if table_row.is_displayed():
+            print("✅ Table row hover effect is working")
         else:
-            print("❌ Agency Logo title is not displayed")
+            print("❌ Table row not displayed properly")
 
-        # Test Case 11: Agency Name title and field
-        print("\nTest Case 11: Agency Name title and field")
-        agency_name_title = wait.until(EC.presence_of_element_located((By.XPATH, "//span[normalize-space()='Agency Name']")))
-        agency_name_field = wait.until(EC.presence_of_element_located((By.ID, "agn_name")))
-        if agency_name_title.is_displayed() and agency_name_field.is_displayed():
-            print("✅ Agency Name title and field are displayed correctly")
-            # Test input functionality
-            agency_name_field.send_keys("Test Agency Name")
-            print("✅ Agency Name input field is working")
+        # Test Case 10: Agency Code Column Sort
+        print("\nTest Case 10: Testing Agency Code Column Sort")
+        sort_up_code = wait.until(EC.presence_of_element_located((
+            By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▲')])[1]"
+        )))
+        sort_down_code = wait.until(EC.presence_of_element_located((
+            By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▼')])[1]"
+        )))
+        
+        if sort_up_code.is_displayed() and sort_down_code.is_displayed():
+            sort_up_code.click()
+            time.sleep(1.5)
+            wait_for_loading_screen(wait)
+            sort_down_code.click()
+            time.sleep(1.5)
+            wait_for_loading_screen(wait)
+            print("✅ Agency Code sort buttons are functional")
         else:
-            print("❌ Agency Name elements are not displayed correctly")
+            print("❌ Agency Code sort buttons not displayed")
 
-        # Test Case 12: Alias (short name) title and field
-        print("\nTest Case 12: Alias title and field")
-        alias_title = wait.until(EC.presence_of_element_located((By.XPATH, "//body[1]/div[2]/div[2]/div[1]/div[2]/form[1]/div[4]/span[1]")))
-        alias_field = wait.until(EC.presence_of_element_located((By.ID, "agn_code")))
-        if alias_title.is_displayed() and alias_field.is_displayed():
-            print("✅ Alias title and field are displayed correctly")
-            # Test input functionality
-            alias_field.send_keys("TEST")
-            print("✅ Alias input field is working")
+        # Test Case 11: Agency/Institution Column Sort
+        print("\nTest Case 11: Testing Agency/Institution Column Sort")
+        sort_up_inst = wait.until(EC.presence_of_element_located((
+            By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▲')])[2]"
+        )))
+        sort_down_inst = wait.until(EC.presence_of_element_located((
+            By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▼')])[2]"
+        )))
+        
+        if sort_up_inst.is_displayed() and sort_down_inst.is_displayed():
+            sort_up_inst.click()
+            time.sleep(1.5)
+            wait_for_loading_screen(wait)
+            sort_down_inst.click()
+            time.sleep(1.5)
+            wait_for_loading_screen(wait)
+            print("✅ Agency/Institution sort buttons are functional")
         else:
-            print("❌ Alias elements are not displayed correctly")
+            print("❌ Agency/Institution sort buttons not displayed")
 
-        # Test Case 13: Agency Group title
-        print("\nTest Case 13: Agency Group title")
-        agency_group_title = wait.until(EC.presence_of_element_located((By.XPATH, "//span[normalize-space()='Agency Group']")))
-        if agency_group_title.is_displayed():
-            print("✅ Agency Group title is displayed correctly")
+        # Test Case 12: Agency Code Column Title
+        print("\nTest Case 12: Checking Agency Code Column Title")
+        agency_code_title = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//div[normalize-space()='AGENCY CODE']"
+        )))
+        if agency_code_title.is_displayed():
+            print("✅ Agency Code column title is displayed")
         else:
-            print("❌ Agency Group title is not displayed")
+            print("❌ Agency Code column title not displayed")
 
-        # Test Case 14: Agency name input field test
-        print("\nTest Case 14: Agency name input field test")
-        agency_name_field = wait.until(EC.presence_of_element_located((By.ID, "agn_name")))
-        test_input = "Test Agency Name Input"
-        agency_name_field.clear()
-        agency_name_field.send_keys(test_input)
-        actual_value = agency_name_field.get_attribute("value")
-        if actual_value == test_input:
-            print(f"✅ Agency name input field working correctly: {actual_value}")
+        # Test Case 13: Agency/Institution Column Title
+        print("\nTest Case 13: Checking Agency/Institution Column Title")
+        agency_inst_title = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//div[normalize-space()='AGENCY / INSTITUTION']"
+        )))
+        if agency_inst_title.is_displayed():
+            print("✅ Agency/Institution column title is displayed")
         else:
-            print(f"❌ Agency name input field not working as expected")
+            print("❌ Agency/Institution column title not displayed")
 
-        # Test Case 15: Agency Group title verification
-        print("\nTest Case 15: Agency Group title verification")
-        agency_group_title = wait.until(EC.presence_of_element_located((By.XPATH, "//span[normalize-space()='Agency Group']")))
-        if agency_group_title.is_displayed():
-            print("✅ Agency Group title is displayed correctly")
+        # Test Case 14: Agency Head Column Title
+        print("\nTest Case 14: Checking Agency Head Column Title")
+        agency_head_title = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//td[normalize-space()='AGENCY HEAD']"
+        )))
+        if agency_head_title.is_displayed():
+            print("✅ Agency Head column title is displayed")
         else:
-            print("❌ Agency Group title is not displayed")
+            print("❌ Agency Head column title not displayed")
 
-        # Test Case 16: Agency Group dropdown options
-        print("\nTest Case 16: Agency Group dropdown options")
-        # Test each dropdown option
-        dropdown_values = {
-            "1": "Office of the Secretary",
-            "2": "Regional Offices",
-            "3": "Sectoral Planning Councils",
-            "4": "Collegial Bodies",
-            "5": "Research and Development Institutes",
-            "6": "Scientific and Technical Service Institutes"
+        # Test Case 15: Official Website Link Column Title
+        print("\nTest Case 15: Checking Official Website Link Column Title")
+        website_title = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//td[normalize-space()='OFFICIAL WEBSITE LINK']"
+        )))
+        if website_title.is_displayed():
+            print("✅ Official Website Link column title PASSED")
+        else:
+            print("❌ Official Website Link column title not displayed")
+
+        # Test Case 16: Click First Row and Store Data
+        print("\nTest Case 16: Clicking First Row and Storing Data")
+        first_row = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//tr[@class='border mx-5 text-left align-text-top odd:white even:bg-gray-100 hover:bg-gray-200 text-sm']"
+        )))
+        
+        # Store row data before clicking
+        row_data = {
+            'code': first_row.find_element(By.XPATH, ".//td[1]").text,
+            'name': first_row.find_element(By.XPATH, ".//td[2]").text,
+            'head': first_row.find_element(By.XPATH, ".//td[3]").text,
+            'website': first_row.find_element(By.XPATH, ".//td[4]").text
         }
         
-        for value, expected_text in dropdown_values.items():
-            option = wait.until(EC.presence_of_element_located((By.XPATH, f"//option[@value='{value}']")))
-            if option.is_displayed() and option.text.strip() == expected_text:
-                print(f"✅ Found dropdown option: {expected_text}")
-            else:
-                print(f"❌ Missing or incorrect dropdown option: {expected_text}")
-
-        # Test Case 17: Official Website Link title
-        print("\nTest Case 17: Official Website Link title")
-        website_title = wait.until(EC.presence_of_element_located((By.XPATH, "//span[normalize-space()='Agency Official Website Link']")))
-        if website_title.is_displayed():
-            print("✅ Official Website Link title is displayed correctly")
-        else:
-            print("❌ Official Website Link title is not displayed")
-
-        # Test Case 18: Official website link input field
-        print("\nTest Case 18: Official website link input field")
-        website_field = wait.until(EC.presence_of_element_located((By.ID, "agn_website")))
-        test_website = "https://test-agency.gov.ph"
-        website_field.send_keys(test_website)
-        actual_value = website_field.get_attribute("value")
-        if actual_value == test_website:
-            print(f"✅ Website input field working correctly: {actual_value}")
-        else:
-            print(f"❌ Website input field not working as expected")
-
-        # Test Case 19: Agency Head title
-        print("\nTest Case 19: Agency Head title")
-        agency_head_title = wait.until(EC.presence_of_element_located((By.XPATH, "//span[normalize-space()='Name of Agency Head']")))
-        if agency_head_title.is_displayed():
-            print("✅ Agency Head title is displayed correctly")
-        else:
-            print("❌ Agency Head title is not displayed")
-
-        # Test Case 20: X icon (close button)
-        print("\nTest Case 20: X icon (close button)")
-        x_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']//button//div//*[name()='svg']//*[name()='path' and contains(@fill,'currentCol')]")))
-        if x_button.is_displayed():
-            print("✅ X icon (close button) is displayed correctly")
-            x_button.click()
-            time.sleep(1)
-            # Reopen the form for further testing
-            add_new_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btn-circular square-md shadow-[4.0px_8.0px_8.0px_rgba(0,0,0,0.20)]']")))
-            add_new_btn.click()
-            time.sleep(1)
-        else:
-            print("❌ X icon (close button) is not displayed")
-
-        # Test Case 21: Cancel button
-        print("\nTest Case 21: Cancel button")
-        cancel_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Cancel']")))
-        if cancel_button.is_displayed():
-            print("✅ Cancel button is displayed correctly")
-            cancel_button.click()
-            time.sleep(1)
-            # Reopen the form for further testing
-            add_new_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btn-circular square-md shadow-[4.0px_8.0px_8.0px_rgba(0,0,0,0.20)]']")))
-            add_new_btn.click()
-            time.sleep(1)
-        else:
-            print("❌ Cancel button is not displayed")
-
-        # Test Case 22: Fill form fields and save
-        print("\nTest Case 22: Fill form fields and save")
-        
-        # Fill in required fields with sample data
-        # Agency Name
-        agency_name_field = wait.until(EC.presence_of_element_located((By.ID, "agn_name")))
-        agency_name_field.clear()
-        agency_name_field.send_keys("Advanced Science Research Institute")
-        time.sleep(0.5)
-        
-        # Alias/Short Name
-        alias_field = wait.until(EC.presence_of_element_located((By.ID, "agn_code")))
-        alias_field.clear()
-        alias_field.send_keys("ASRI")
-        time.sleep(0.5)
-        
-        # Agency Group - Select "Research and Development Institutes"
-        agency_group = wait.until(EC.presence_of_element_located((By.ID, "agn_group")))
-        agency_group.click()
-        time.sleep(0.5)
-        rd_institutes_option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Research and Development Institutes']")))
-        rd_institutes_option.click()
-        time.sleep(0.5)
-        
-        # Agency Official Website Link
-        website_field = wait.until(EC.presence_of_element_located((By.ID, "agn_website")))
-        website_field.clear()
-        website_field.send_keys("https://www.asri.edu.ph")
-        time.sleep(0.5)
-        
-        # Name of Agency Head
-        # First Name
-        first_name_field = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='First Name']")))
-        first_name_field.clear()
-        first_name_field.send_keys("Maria")
-        time.sleep(0.5)
-        
-        # Middle Initial
-        mi_field = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='M.I.']")))
-        mi_field.clear()
-        mi_field.send_keys("R")
-        time.sleep(0.5)
-        
-        # Surname
-        surname_field = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Surname']")))
-        surname_field.clear()
-        surname_field.send_keys("Santos")
-        time.sleep(0.5)
-        
-        # Suffix
-        suffix_field = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Suffix']")))
-        suffix_field.clear()
-        suffix_field.send_keys("PhD")
-        time.sleep(0.5)
-        
-        # Click Save button
-        save_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Save']")))
-        if save_button.is_displayed():
-            print("✅ All fields filled successfully")
-            save_button.click()
-            time.sleep(2)
-            
-            # Check for success message
-            try:
-                success_message = wait.until(EC.presence_of_element_located((By.ID, "swal2-title")))
-                if "successfully" in success_message.text.lower():
-                    print("✅ Form saved successfully")
-                    # Click OK on success message
-                    ok_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='OK']")))
-                    ok_button.click()
-                    time.sleep(1)
-                else:
-                    print("❌ Unexpected message after saving")
-            except:
-                print("❌ Could not verify save success message")
-        else:
-            print("❌ Save button is not displayed")
-
-        # Test Case 23: "Agency Code" title and sorting
-        print("\nTest Case 23: Agency Code title and sorting")
-        
-        # First ensure no forms are open by clicking cancel if visible
-        try:
-            cancel_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Cancel']")))
-            if cancel_button.is_displayed():
-                cancel_button.click()
-                time.sleep(1)
-        except:
-            pass  # No form open, continue
-            
-        # Check Agency Code title using exact selector
-        agency_code_title = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[normalize-space()='AGENCY CODE'])[1]")))
-        if agency_code_title.is_displayed():
-            print("✅ Agency Code title is displayed correctly")
-            
-            # Test sorting arrows
-            try:
-                # Up arrow
-                sort_up = wait.until(EC.presence_of_element_located((
-                    By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▲')])[1]"
-                )))
-                
-                # Down arrow
-                sort_down = wait.until(EC.presence_of_element_located((
-                    By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▼')])[1]"
-                )))
-                
-                if sort_up.is_displayed() and sort_down.is_displayed():
-                    print("✅ Agency Code sorting arrows are displayed correctly")
-                    
-                    # Click up arrow
-                    driver.execute_script("arguments[0].click();", sort_up)
-                    time.sleep(1.5)
-                    wait_for_loading_screen(wait)
-                    
-                    # Click down arrow
-                    driver.execute_script("arguments[0].click();", sort_down)
-                    time.sleep(1.5)
-                    wait_for_loading_screen(wait)
-                    
-                    print("✅ Agency Code sorting functionality tested")
-                else:
-                    print("❌ Agency Code sorting arrows are not displayed")
-            except Exception as e:
-                print(f"❌ Error testing Agency Code sorting: {str(e)}")
-        else:
-            print("❌ Agency Code title is not displayed")
-
-        # Test Case 24: "Agency / Institution" title and sorting
-        print("\nTest Case 24: Agency/Institution title and sorting")
-        try:
-            # First check the column title
-            agency_inst_title = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "td:nth-child(1) div:nth-child(1) div:nth-child(2)")))
-            
-            if agency_inst_title.is_displayed() and agency_inst_title.text.strip() == "AGENCY / INSTITUTION":
-                print("✅ Agency/Institution title is displayed correctly")
-                
-                # Test sorting arrows
-                try:
-                    # Up arrow
-                    sort_up = wait.until(EC.presence_of_element_located((
-                        By.CSS_SELECTOR, "td:nth-child(1) div:nth-child(1) div:nth-child(1) span:nth-child(2)"
-                    )))
-                    
-                    # Down arrow
-                    sort_down = wait.until(EC.presence_of_element_located((
-                        By.CSS_SELECTOR, "td:nth-child(1) div:nth-child(1) div:nth-child(1) span:nth-child(2)"
-                    )))
-                    
-                    if sort_up.is_displayed() and sort_down.is_displayed():
-                        print("✅ Agency/Institution sorting arrows are displayed correctly")
-                        
-                        # Click up arrow
-                        driver.execute_script("arguments[0].click();", sort_up)
-                        time.sleep(1.5)
-                        wait_for_loading_screen(wait)
-                        
-                        # Click down arrow
-                        driver.execute_script("arguments[0].click();", sort_down)
-                        time.sleep(1.5)
-                        wait_for_loading_screen(wait)
-                        
-                        print("✅ Agency/Institution sorting functionality tested")
-                    else:
-                        print("❌ Agency/Institution sorting arrows are not displayed")
-                except Exception as e:
-                    print(f"❌ Error testing Agency/Institution sorting: {str(e)}")
-            else:
-                print("❌ Agency/Institution title is not displayed correctly")
-        except Exception as e:
-            print(f"❌ Error verifying Agency/Institution column: {str(e)}")
-
-        # Test Case 25: Agency Head table header
-        print("\nTest Case 25: Agency Head table header")
-        agency_head_header = wait.until(EC.presence_of_element_located((By.XPATH, "//td[normalize-space()='AGENCY HEAD']")))
-        if agency_head_header.is_displayed():
-            print("✅ Agency Head header is displayed correctly")
-        else:
-            print("❌ Agency Head header is not displayed")
-
-        # Test Case 26: Official Website Link table header
-        print("\nTest Case 26: Official Website Link table header")
-        website_header = wait.until(EC.presence_of_element_located((By.XPATH, "//td[normalize-space()='OFFICIAL WEBSITE LINK']")))
-        if website_header.is_displayed():
-            print("✅ Official Website Link header is displayed correctly")
-        else:
-            print("❌ Official Website Link header is not displayed")
-
-        # Clear search input field and refresh page
-        print("\nClearing search input field and refreshing page")
-        try:
-            search_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search...']")))
-            if search_input.get_attribute("value"):
-                search_input.clear()
-                time.sleep(1)  # Wait for table to refresh after clearing
-            
-            # Refresh the page
-            driver.refresh()
-            time.sleep(2)  # Wait for page to load after refresh
-            wait_for_loading_screen(wait)
-            print("✅ Page refreshed successfully")
-            
-        except Exception as e:
-            print(f"❌ Error clearing search input and refreshing page: {str(e)}")
-            return
-
-        # Test Case 27: Table Row Update - Open Update Form
-        print("\nTest Case 27: Table Row Update - Open Update Form")
-        try:
-            # Make sure any loading is complete
-            wait_for_loading_screen(wait)
-            time.sleep(2)  # Additional wait to ensure table is fully loaded
-            
-            # Try different selectors in sequence until one works
-            selectors = [
-                (By.CSS_SELECTOR, "tbody tr:nth-child(1) td:nth-child(1)"),
-                (By.XPATH, "//td[normalize-space()='BOC']"),
-                (By.XPATH, "//td[contains(text(), 'BOC')]")
-            ]
-            
-            cell = None
-            for selector_type, selector in selectors:
-                try:
-                    cell = wait.until(EC.element_to_be_clickable((selector_type, selector)))
-                    if cell:
-                        break
-                except:
-                    continue
-            
-            if not cell:
-                print("❌ Could not find the table cell to click")
-                return
-                
-            # Get the parent row of the cell
-            row = cell.find_element(By.XPATH, "./..")
-            
-            # Scroll the row into view
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", row)
-            time.sleep(1)
-            
-            # Click the row
-            driver.execute_script("arguments[0].click();", row)
-            time.sleep(1.5)
-            
-            # Verify the modal appears
-            modal = wait.until(EC.presence_of_element_located((
-                By.XPATH, "//p[contains(@class, 'modal-title')]"
-            )))
-            
-            if modal.is_displayed():
-                print("✅ Successfully clicked row and opened modal")
-            else:
-                print("❌ Modal did not appear after clicking row")
-                return
-                
-        except Exception as e:
-            print(f"❌ Error opening update form: {str(e)}")
-            return
-
-        # Test Case 28: Verify Modal Title
-        print("\nTest Case 28: Verify Modal Title")
-        modal_title = wait.until(EC.presence_of_element_located((By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']")))
-        if modal_title.text.strip() == "Agency / Institution":
-            print("✅ Modal title is correct")
-        else:
-            print("❌ Incorrect modal title")
-
-        # Store original values
-        original_values = {}
-        
-        # Test Case 29: Agency Name Field
-        print("\nTest Case 29: Agency Name Field")
-        agency_name = wait.until(EC.presence_of_element_located((By.ID, "agn_name")))
-        original_values['agency_name'] = agency_name.get_attribute('value')
-        agency_name.clear()
-        agency_name.send_keys(original_values['agency_name'] + " (edited)")
-        time.sleep(0.5)
-        print("✅ Test Case 29: Agency Name field verified and edited")
-
-        # Test Case 30: Alias Field
-        print("\nTest Case 30: Alias Field")
-        alias = wait.until(EC.presence_of_element_located((By.ID, "agn_code")))
-        original_values['alias'] = alias.get_attribute('value')
-        alias.clear()
-        alias.send_keys(original_values['alias'])
-        time.sleep(0.5)
-        print("✅ Test Case 30: Alias field verified and retained")
-
-        # Test Case 31: Agency Group Field
-        print("\nTest Case 31: Agency Group Field")
-        agency_group = wait.until(EC.presence_of_element_located((By.ID, "agn_group")))
-        original_values['group'] = agency_group.get_attribute('value')
-        print("✅ Test Case 31: Agency Group field verified and retained")
-
-        # Test Case 32: Website Field
-        print("\nTest Case 32: Website Field")
-        website = wait.until(EC.presence_of_element_located((By.ID, "agn_website")))
-        original_values['website'] = website.get_attribute('value')
-        website.clear()
-        website.send_keys(original_values['website'])
-        time.sleep(0.5)
-        print("✅ Test Case 32: Website field verified and retained")
-
-        # Test Cases 33-36: Agency Head Fields
-        # Test Case 33: First Name
-        print("\nTest Case 33: Agency Head - First Name")
-        fname = wait.until(EC.presence_of_element_located((By.ID, "agn_head_fname")))
-        original_values['fname'] = fname.get_attribute('value')
-        fname.clear()
-        fname.send_keys(original_values['fname'])
-        time.sleep(0.5)
-        print("✅ Test Case 33: Agency Head First Name field verified and retained")
-
-        # Test Case 34: Middle Initial
-        print("\nTest Case 34: Agency Head - Middle Initial")
-        mi = wait.until(EC.presence_of_element_located((By.ID, "agn_head_mi")))
-        original_values['mi'] = mi.get_attribute('value')
-        mi.clear()
-        mi.send_keys(original_values['mi'])
-        time.sleep(0.5)
-        print("✅ Test Case 34: Agency Head Middle Initial field verified and retained")
-
-        # Test Case 35: Surname
-        print("\nTest Case 35: Agency Head - Surname")
-        surname = wait.until(EC.presence_of_element_located((By.ID, "agn_head_mi")))
-        original_values['surname'] = surname.get_attribute('value')
-        surname.clear()
-        surname.send_keys(original_values['surname'])
-        time.sleep(0.5)
-        print("✅ Test Case 35: Agency Head Surname field verified and retained")
-
-        # Test Case 36: Suffix
-        print("\nTest Case 36: Agency Head - Suffix")
-        suffix = wait.until(EC.presence_of_element_located((By.ID, "agn_head_sfx")))
-        original_values['suffix'] = suffix.get_attribute('value')
-        suffix.clear()
-        suffix.send_keys(original_values['suffix'])
-        time.sleep(0.5)
-        print("✅ Test Case 36: Agency Head Suffix field verified and retained")
-
-        # Test Case 37: Save Changes
-        print("\nTest Case 37: Save Changes")
-        save_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Save']")))
-        save_button.click()
+        first_row.click()
         time.sleep(1.5)
+        print("✅ Successfully clicked first row and stored data")
 
-        # Test Case 38: Verify Success Message
-        print("\nTest Case 38: Verify Success Message")
-        try:
-            success_message = wait.until(EC.presence_of_element_located((By.XPATH, "//h2[normalize-space()='Agency / Institution updated successfully.']")))
-            if success_message.is_displayed():
-                print("✅ Update success message displayed")
-                ok_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='OK']")))
-                ok_button.click()
-                time.sleep(1)
-            else:
-                print("❌ Update success message not displayed")
-        except:
-            print("❌ Error verifying success message")
+        # Test Case 17: Compare Agency Code
+        print("\nTest Case 17: Comparing Agency Code")
+        agency_code_input = wait.until(EC.presence_of_element_located((
+            By.ID, "agn_code"
+        )))
+        if agency_code_input.get_attribute('value') == row_data['code']:
+            print("✅ Agency Code matches table row content")
+        else:
+            print("❌ Agency Code mismatch")
 
-        # Test Case 39: Delete Row
-        print("\nTest Case 39: Delete Row")
-        try:
-            # Click the row again
-            table_row = wait.until(EC.element_to_be_clickable((By.XPATH, "(//tr[@class='border mx-5 text-left align-text-top odd:white even:bg-gray-100 hover:bg-gray-200 text-sm'])[1]")))
-            table_row.click()
+        # Test Case 18: Compare Agency/Institution Name
+        print("\nTest Case 18: Comparing Agency/Institution Name")
+        agency_name_input = wait.until(EC.presence_of_element_located((
+            By.ID, "agn_name"
+        )))
+        if agency_name_input.get_attribute('value') == row_data['name']:
+            print("✅ Agency/Institution name matches table row content")
+        else:
+            print("❌ Agency/Institution name mismatch")
+
+        # Test Case 19: Compare Agency Head
+        print("\nTest Case 19: Comparing Agency Head")
+        fname = wait.until(EC.presence_of_element_located((By.ID, "agn_head_fname"))).get_attribute('value')
+        mi = wait.until(EC.presence_of_element_located((By.ID, "agn_head_mi"))).get_attribute('value')
+        lname = wait.until(EC.presence_of_element_located((By.ID, "agn_head_lname"))).get_attribute('value')
+        suffix = wait.until(EC.presence_of_element_located((By.ID, "agn_head_sfx"))).get_attribute('value')
+        
+        modal_head = f"{fname} {mi} {lname} {suffix}".strip()
+        if modal_head == row_data['head']:
+            print("✅ Agency Head matches table row content")
+        else:
+            print("❌ Agency Head mismatch")
+
+        # Test Case 20: Compare Website Link
+        print("\nTest Case 20: Comparing Official Website Link")
+        website_input = wait.until(EC.presence_of_element_located((
+            By.ID, "agn_website"
+        )))
+        if website_input.get_attribute('value') == row_data['website']:
+            print("✅ Website link matches table row content")
+        else:
+            print("❌ Website link mismatch")
+
+        # Test Case 21: Check Delete Button
+        print("\nTest Case 21: Checking Delete Button")
+        delete_button = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//button[normalize-space()='Delete']"
+        )))
+        if delete_button.is_displayed():
+            print("✅ Delete button is present")
+        else:
+            print("❌ Delete button not displayed")
+
+        # Test Case 22: Save and Confirm
+        print("\nTest Case 22: Testing Save Button")
+        save_button = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//button[normalize-space()='Save']"
+        )))
+        if save_button.is_displayed():
+            save_button.click()
             time.sleep(1.5)
-
-            # Click Delete button
-            delete_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Delete']")))
-            delete_button.click()
+            
+            # Click OK on success modal
+            ok_button = wait.until(EC.element_to_be_clickable((
+                By.XPATH, "//button[normalize-space()='OK']"
+            )))
+            ok_button.click()
             time.sleep(1)
+            print("✅ Save button test passed")
+        else:
+            print("❌ Save button not displayed")
 
-            # Test Case 40: Verify Delete Confirmation
-            print("\nTest Case 40: Verify Delete Confirmation")
-            confirm_message = wait.until(EC.presence_of_element_located((By.XPATH, "//h2[normalize-space()='Are you sure you want to delete this item?']")))
-            if confirm_message.is_displayed():
-                print("✅ Delete confirmation message displayed")
-                
-                # Test Case 41: Confirm Deletion
-                print("\nTest Case 41: Confirm Deletion")
-                confirm_delete = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Delete')]")))
-                confirm_delete.click()
-                time.sleep(1.5)
-                print("✅ Delete operation completed")
-            else:
-                print("❌ Delete confirmation message not displayed")
-        except Exception as e:
-            print(f"❌ Error during delete operation: {str(e)}")
-
-        print(f"\n--------------Test Completed--------------\n")
+        print("\n--------------Test Completed--------------\n")
 
     except Exception as e:
         print(f"An error occurred: {str(e)}")

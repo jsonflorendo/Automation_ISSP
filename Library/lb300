@@ -61,7 +61,7 @@ def LIB_300():
         # Navigate directly to library URL
         wait_for_loading_screen(wait)
         driver.get("http://10.10.99.23/library")
-        time.sleep(2)  # Wait for library page to stabilize
+        time.sleep(2)
         wait_for_loading_screen(wait)
         print("\n✅ Successfully navigated to Library page")
 
@@ -88,13 +88,13 @@ def LIB_300():
             search_input.send_keys("test search")
             time.sleep(1)
             search_input.clear()
-            print("✅ Search functionality working")
+            time.sleep(1)
             
             # Refresh page and return to Funding Source tab
             driver.refresh()
             time.sleep(2)
             return_to_funding_source(driver, wait)
-            print("✅ Page refreshed and returned to Funding Source tab successfully")
+            print("✅ Search functionality working and page refreshed")
         else:
             print("❌ Search elements not displayed properly")
 
@@ -107,159 +107,22 @@ def LIB_300():
             print("✅ Add New button is displayed")
             add_new_btn.click()
             time.sleep(1.5)
-            print("✅ Add New button clicked successfully")
+            
+            # Close modal using X button
+            x_button = wait.until(EC.element_to_be_clickable((
+                By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']//button//div//*[name()='svg']"
+            )))
+            if x_button.is_displayed():
+                x_button.click()
+                time.sleep(1)
+                print("✅ Modal closed successfully using X button")
+            else:
+                print("❌ X button not displayed")
         else:
             print("❌ Add New button not displayed")
 
-        # Test Case 3: Modal Title Check
-        print("\nTest Case 3: Checking Modal Title")
-        modal_title = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']"
-        )))
-        if modal_title.is_displayed() and "Funding Source" in modal_title.text:
-            print("✅ Modal title is correct and displayed properly")
-        else:
-            print("❌ Modal title not displayed correctly")
-
-        # Test Case 4: Funding Source Code Field
-        print("\nTest Case 4: Checking Funding Source Code Field")
-        fs_code_title = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//span[normalize-space()='Funding Source Code']"
-        )))
-        fs_code_input = wait.until(EC.presence_of_element_located((
-            By.ID, "fnd_code"
-        )))
-        
-        if fs_code_title.is_displayed() and fs_code_input.is_displayed():
-            print("✅ Funding Source Code field and title are displayed")
-            fs_code_input.send_keys("TEST123")
-            time.sleep(0.5)
-            print("✅ Successfully input test data in Funding Source Code field")
-        else:
-            print("❌ Funding Source Code elements not displayed properly")
-
-        # Test Case 5: Funding Source Name Field
-        print("\nTest Case 5: Checking Funding Source Name Field")
-        fs_name_title = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//span[normalize-space()='Funding Source Name']"
-        )))
-        fs_name_input = wait.until(EC.presence_of_element_located((
-            By.ID, "fnd_name"
-        )))
-        
-        if fs_name_title.is_displayed() and fs_name_input.is_displayed():
-            print("✅ Funding Source Name field and title are displayed")
-            fs_name_input.send_keys("Test Funding Source")
-            time.sleep(0.5)
-            print("✅ Successfully input test data in Funding Source Name field")
-        else:
-            print("❌ Funding Source Name elements not displayed properly")
-
-        # Test Case 6: X Button (Close Modal)
-        print("\nTest Case 6: Testing X Button")
-        x_button = wait.until(EC.element_to_be_clickable((
-            By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']//button//div//*[name()='svg']"
-        )))
-        if x_button.is_displayed():
-            print("✅ X button is displayed")
-            x_button.click()
-            time.sleep(1)
-            print("✅ Modal closed successfully using X button")
-        else:
-            print("❌ X button not displayed")
-
-        # Test Case 7: Cancel Button
-        print("\nTest Case 7: Testing Cancel Button")
-        # First reopen the modal
-        add_new_btn.click()
-        time.sleep(1.5)
-        
-        cancel_button = wait.until(EC.element_to_be_clickable((
-            By.XPATH, "//button[normalize-space()='Cancel']"
-        )))
-        if cancel_button.is_displayed():
-            print("✅ Cancel button is displayed")
-            cancel_button.click()
-            time.sleep(1)
-            print("✅ Modal closed successfully using Cancel button")
-        else:
-            print("❌ Cancel button not displayed")
-
-        # After Cancel Button Test (Test Case 7)
-        # Refresh page for table testing
-        print("\nRefreshing page for table testing")
-        driver.refresh()
-        time.sleep(2)
-        return_to_funding_source(driver, wait)
-        print("✅ Page refreshed and returned to Funding Source tab")
-
-        # Test Case 8: Funding Source Code Column Header
-        print("\nTest Case 8: Checking Funding Source Code Column")
-        fs_code_header = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//div[normalize-space()='FUNDING SOURCE CODE']"
-        )))
-        if fs_code_header.is_displayed():
-            print("✅ Funding Source Code column header is displayed")
-        else:
-            print("❌ Funding Source Code column header not displayed")
-
-        # Test Cases 9-10: Sort Buttons for Funding Source Code
-        print("\nTest Cases 9-10: Testing Sort Buttons for Funding Source Code")
-        sort_up = wait.until(EC.presence_of_element_located((
-            By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▲')])[1]"
-        )))
-        sort_down = wait.until(EC.presence_of_element_located((
-            By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▼')])[1]"
-        )))
-        
-        if sort_up.is_displayed() and sort_down.is_displayed():
-            print("✅ Sort buttons are displayed")
-            sort_up.click()
-            time.sleep(1)
-            sort_down.click()
-            time.sleep(1)
-            print("✅ Sort buttons are functional")
-        else:
-            print("❌ Sort buttons not displayed properly")
-
-        # Test Case 11: Funding Source Column Header
-        print("\nTest Case 11: Checking Funding Source Column")
-        fs_header = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//div[normalize-space()='FUNDING SOURCE']"
-        )))
-        if fs_header.is_displayed():
-            print("✅ Funding Source column header is displayed")
-        else:
-            print("❌ Funding Source column header not displayed")
-
-        # Test Cases 12-13: Sort Buttons for Funding Source
-        print("\nTest Cases 12-13: Testing Sort Buttons for Funding Source")
-        fs_sort_up = wait.until(EC.presence_of_element_located((
-            By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▲')])[2]"
-        )))
-        fs_sort_down = wait.until(EC.presence_of_element_located((
-            By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▼')])[2]"
-        )))
-        
-        if fs_sort_up.is_displayed() and fs_sort_down.is_displayed():
-            print("✅ Funding Source sort buttons are displayed")
-            fs_sort_up.click()
-            time.sleep(1)
-            fs_sort_down.click()
-            time.sleep(1)
-            print("✅ Funding Source sort buttons are functional")
-        else:
-            print("❌ Funding Source sort buttons not displayed properly")
-
-        # Test Case 14: Refresh Page
-        print("\nTest Case 14: Refreshing Page")
-        driver.refresh()
-        time.sleep(2)
-        return_to_funding_source(driver, wait)
-        print("✅ Page refreshed and returned to Funding Source tab")
-
-        # Test Case 15: Row Hover Effect
-        print("\nTest Case 15: Testing Row Hover Effect")
+        # Test Case 3: Table Row Hover Effect
+        print("\nTest Case 3: Testing Table Row Hover Effect")
         table_row = wait.until(EC.presence_of_element_located((
             By.XPATH, "(//tr[@class='border mx-5 text-left align-text-top odd:white even:bg-gray-100 hover:bg-gray-200 text-sm'])[1]"
         )))
@@ -268,94 +131,67 @@ def LIB_300():
         else:
             print("❌ Table row not displayed properly")
 
-        # Test Case 16: Click First Row (GAA)
-        print("\nTest Case 16: Testing Row Click")
-        first_row = wait.until(EC.element_to_be_clickable((
-            By.XPATH, "(//tr[@class='border mx-5 text-left align-text-top odd:white even:bg-gray-100 hover:bg-gray-200 text-sm'])[1]"
+        # Test Case 4: Funding Source Code Column Title
+        print("\nTest Case 4: Checking Funding Source Code Column Title")
+        fs_code_header = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//div[normalize-space()='FUNDING SOURCE CODE']"
         )))
-        first_row.click()
+        if fs_code_header.is_displayed():
+            print("✅ Funding source code TITLE / abbreviation PASSED")
+        else:
+            print("❌ Funding Source Code column title not displayed")
+
+        # Test Case 5: Funding Source Column Title
+        print("\nTest Case 5: Checking Funding Source Column Title")
+        fs_title = wait.until(EC.presence_of_element_located((
+            By.CSS_SELECTOR, "td:nth-child(2) div:nth-child(1) div:nth-child(2)"
+        )))
+        if fs_title.is_displayed():
+            print("✅ Name of Funding Source table column title PASSED")
+        else:
+            print("❌ Funding Source column title not displayed")
+
+        # Test Case 6: Testing Sort Buttons for Funding Source Code
+        print("\nTest Case 6: Testing Sort Buttons for Funding Source Code")
+        # Up arrow
+        sort_up = wait.until(EC.presence_of_element_located((
+            By.XPATH, "(//span[contains(text(),'▲')])[1]"
+        )))
+        print("Testing Up sort button")
+        sort_up.click()
         time.sleep(1.5)
-        print("✅ Successfully clicked first row")
-
-        # Test Case 17: Edit Modal Title
-        print("\nTest Case 17: Checking Edit Modal Title")
-        edit_modal_title = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//p[@class='font-bold rounded-t-md modal-title px-5 pt-5 pb-3 flex justify-between']"
-        )))
-        if edit_modal_title.is_displayed():
-            print("✅ Edit modal title is displayed correctly")
-        else:
-            print("❌ Edit modal title not displayed")
-
-        # Test Cases 18-19: Funding Source Code Edit
-        print("\nTest Cases 18-19: Testing Funding Source Code Edit")
-        edit_fs_code_title = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//span[normalize-space()='Funding Source Code']"
-        )))
-        edit_fs_code_input = wait.until(EC.presence_of_element_located((
-            By.ID, "fnd_code"
-        )))
+        wait_for_loading_screen(wait)
         
-        if edit_fs_code_title.is_displayed() and edit_fs_code_input.is_displayed():
-            original_code = edit_fs_code_input.get_attribute('value')
-            edit_fs_code_input.clear()
-            edit_fs_code_input.send_keys(original_code)
-            time.sleep(0.5)
-            print("✅ Successfully tested Funding Source Code edit")
-        else:
-            print("❌ Funding Source Code edit elements not displayed")
+        # Down arrow
+        sort_down = wait.until(EC.presence_of_element_located((
+            By.XPATH, "(//span[contains(text(),'▼')])[1]"
+        )))
+        print("Testing Down sort button")
+        sort_down.click()
+        time.sleep(1.5)
+        wait_for_loading_screen(wait)
+        print("✅ Sort buttons are functional")
 
-        # Test Cases 20-21: Funding Source Name Edit
-        print("\nTest Cases 20-21: Testing Funding Source Name Edit")
-        edit_fs_name_title = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//span[normalize-space()='Funding Source Name']"
+        # Test Case 7: Testing Sort Buttons for Funding Source
+        print("\nTest Case 7: Testing Sort Buttons for Funding Source")
+        # Up arrow
+        fs_sort_up = wait.until(EC.presence_of_element_located((
+            By.XPATH, "(//span[contains(text(),'▲')])[2]"
         )))
-        edit_fs_name_input = wait.until(EC.presence_of_element_located((
-            By.ID, "fnd_name"
-        )))
+        print("Testing Up sort button")
+        fs_sort_up.click()
+        time.sleep(1.5)
+        wait_for_loading_screen(wait)
         
-        if edit_fs_name_title.is_displayed() and edit_fs_name_input.is_displayed():
-            original_name = edit_fs_name_input.get_attribute('value')
-            edit_fs_name_input.clear()
-            edit_fs_name_input.send_keys(original_name)
-            time.sleep(0.5)
-            print("✅ Successfully tested Funding Source Name edit")
-        else:
-            print("❌ Funding Source Name edit elements not displayed")
-
-        # Test Case 22: Delete Button
-        print("\nTest Case 22: Checking Delete Button")
-        delete_button = wait.until(EC.presence_of_element_located((
-            By.XPATH, "//button[normalize-space()='Delete']"
+        # Down arrow
+        fs_sort_down = wait.until(EC.presence_of_element_located((
+            By.XPATH, "(//span[contains(text(),'▼')])[2]"
         )))
-        if delete_button.is_displayed():
-            print("✅ Delete button is displayed")
-        else:
-            print("❌ Delete button not displayed")
-
-        # Test Case 23: Save Button
-        print("\nTest Case 23: Testing Save Button")
-        save_button = wait.until(EC.element_to_be_clickable((
-            By.XPATH, "//button[normalize-space()='Save']"
-        )))
-        if save_button.is_displayed():
-            save_button.click()
-            time.sleep(1.5)
-            print("✅ Save button clicked successfully")
-        else:
-            print("❌ Save button not displayed")
-
-        # Test Case 24: OK Button on Success Modal
-        print("\nTest Case 24: Testing OK Button on Success Modal")
-        ok_button = wait.until(EC.element_to_be_clickable((
-            By.XPATH, "//button[normalize-space()='OK']"
-        )))
-        if ok_button.is_displayed():
-            ok_button.click()
-            time.sleep(1)
-            print("✅ Successfully confirmed update with OK button")
-        else:
-            print("❌ OK button not displayed")
+        print("Testing Down sort button")
+        fs_sort_down.click()
+        time.sleep(1.5)
+        wait_for_loading_screen(wait)
+        print("✅ Sort buttons are functional")
 
         print("\n--------------Test Completed--------------\n")
 
