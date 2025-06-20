@@ -1,81 +1,40 @@
 from selenium import webdriver
-
 from selenium.common.exceptions import NoSuchElementException
-
 from selenium.webdriver.common.by import By
-
 from selenium.webdriver.support.wait import WebDriverWait
-
 from selenium.webdriver.support import expected_conditions as EC
-
 from selenium.webdriver.common.keys import Keys
-
 from selenium.webdriver.support.ui import Select
-
-
-
-
 import sys
-
 import time
 
 
-
-
 sys.path.append('../Automation_ISSP')  
-
 from Login.login import login, driver
-
 login() 
-
-
-
 
 wait = WebDriverWait(driver, 15)
 
-
-
-
 time.sleep(3)
-
 if len(driver.window_handles) > 1:
-
     driver.switch_to.window(driver.window_handles[-1])
 
 
-
-
-
-
-
 driver.get("http://10.10.99.23/library")
-
 print("Reached the Library panel.")
-
 driver.execute_script("window.scrollBy(0, 1000);")
 
 time.sleep(15)
-
-
-
-
-user_acc_tab = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//ul/li[6]//p[contains(text(), 'User Accounts')]")))
-
+user_acc_tab = wait.until(EC.element_to_be_clickable((By.XPATH, "//ul/li[6]//p[contains(text(), 'User Accounts')]")))
 user_acc_tab.click()
 
 print("✅ Test Case 0 Passed: User Accounts tab clicked.")
 
 time.sleep(20)
 
-
-
-
-
-
-
 print("/*********  User Accounts (ADD) *********/")
 
-add_new_btn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Add New']]")))
+add_new_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Add New']]")))
 
 try:
 
@@ -88,105 +47,52 @@ except (NoSuchElementException):
     print("Add New button not found or not clickable.")
 
 time.sleep(10)
-
-
-
-
-modal_title         = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'User Account')]")))
-
-employee_name_label  = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Employee Name']")))
-
-first_name_input    = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "usr_fname")))
-
-middle_name_input   = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "usr_mname")))  
-
-surname_input       = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "usr_lname")))
-
-suffix_input        = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "usr_sfx")))
-
-email_address_label = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Email Address']"))) #
-
-email_address_input = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "usr_email")))
-
-contact_num_label   = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Contact Number']")))
-
-contact_num_input   = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "usr_contact")))
-
-position_label      = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Position']")))
-
-position_input      = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "usr_position")))
-
-access_level_label  = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Access Level']")))
-
-access_level_input  = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "usr_level")))
-
-agency_label        = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Agency']")))
-
-agency_input        = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//input[@placeholder='Select Agency']")))
-
-cancel_btn          = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Cancel']")))
-
-invite_btn          = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Invite']")))
-
-
-
-
-
+modal_title         = wait.until(EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'User Account')]")))
+employee_name_label = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Employee Name']")))
+first_name_input    = wait.until(EC.visibility_of_element_located((By.ID, "usr_fname")))
+middle_name_input   = wait.until(EC.visibility_of_element_located((By.ID, "usr_mname")))  
+surname_input       = wait.until(EC.visibility_of_element_located((By.ID, "usr_lname")))
+suffix_input        = wait.until(EC.visibility_of_element_located((By.ID, "usr_sfx")))
+email_address_label = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Email Address']"))) #
+email_address_input = wait.until(EC.visibility_of_element_located((By.ID, "usr_email")))
+contact_num_label   = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Contact Number']")))
+contact_num_input   = wait.until(EC.visibility_of_element_located((By.ID, "usr_contact")))
+position_label      = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Position']")))
+position_input      = wait.until(EC.visibility_of_element_located((By.ID, "usr_position")))
+access_level_label  = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Access Level']")))
+access_level_input  = wait.until(EC.visibility_of_element_located((By.ID, "usr_level")))
+agency_label        = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Agency']")))
+agency_input        = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@placeholder='Select Agency']")))
+cancel_btn          = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Cancel']")))
+invite_btn          = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Invite']")))
 
 
 elements_to_check = [
-
     (modal_title, "User account modal"),
-
     (employee_name_label, "Employee Name label"),
-
     (first_name_input, "First Name input"),
-
     (middle_name_input, "Middle Name input"),
-
     (surname_input, "Surname input"),
-
     (suffix_input, "Suffix input"),
-
     (email_address_label, "Email Address label"),
-
     (email_address_input, "Email Address input"),
-
     (contact_num_label, "Contact Number label"),
-
     (contact_num_input, "Contact Number input"),
-
     (position_label, "Position label"),
-
     (position_input, "Position input"),
-
     (access_level_label, "Access Level label"),
-
     (access_level_input, "Access Level input"),
-
     (agency_label, "Agency label"),
-
     (agency_input, "Agency input"),
-
     (cancel_btn, "Cancel button"),
-
     (invite_btn, "Invite button")
-
 ]
 
-
-
-
 for index, (element, description) in enumerate(elements_to_check, start=1):
-
     if element and element.is_displayed():
-
         print(f"✅ Test Case {index} Passed: {description} appeared.")
-
     else:
-
         print(f"❌ Test Case {index} Failed: {description} doesn't appear.")
-
     time.sleep(1)
 
 
