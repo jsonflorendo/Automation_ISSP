@@ -323,7 +323,7 @@ def SI_000(driver):
         message_text = invalid_credentials_error_message.text.strip()
 
         time.sleep(1)
-        print(f"\nTest Case 19 : Input invalide credentials and click Sign In: System display Invalid credentials error message.")
+        print(f"\nTest Case 19 : Input invalid credentials and click Sign In: System display Invalid credentials error message.")
 
         if message_text == "Invalid Email Address / Password.":
             print(f"✅ Passed : {message_text}")
