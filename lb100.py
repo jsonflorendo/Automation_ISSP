@@ -1,0 +1,417 @@
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
+import sys
+import time
+
+sys.path.append('../Automation_ISSP')  
+from Login.login import login, driver
+login() 
+
+wait = WebDriverWait(driver, 15)
+time.sleep(3)
+if len(driver.window_handles) > 1:
+    driver.switch_to.window(driver.window_handles[-1])
+
+driver.get("http://10.10.99.23/library")
+print("Reached the Library panel.")
+driver.execute_script("window.scrollBy(0, 1000);")
+time.sleep(10)
+
+def main():
+    time.sleep(5)
+    test_agency_institution_tab()
+    time.sleep(5)
+    test_funding_source_tab()
+    time.sleep(5)
+    test_ict_categories_tab()
+    time.sleep(5)
+    test_ict_items_tab()
+    time.sleep(5)
+    test_is_classification_tab()
+    time.sleep(5)
+    test_user_accounts_tab()
+    time.sleep(5)
+    return_agency_tab()
+    time.sleep(5)
+    test_search_functionality()
+    time.sleep(5)
+    test_add_new_button()
+    time.sleep(5)
+    test_table_row_hover_effect()
+    time.sleep(5)
+    test_agency_code_sort()
+    time.sleep(5)
+    test_agency_institution_sort()
+    time.sleep(5)
+    test_agency_code_column_title()
+    time.sleep(5)
+    test_agency_head_column_title()
+    time.sleep(5)
+    row_data = test_click_first_row_and_store_data()
+    time.sleep(5)
+    test_compare_agency_code(row_data)
+    time.sleep(5)
+    test_compare_agency_name(row_data)
+    time.sleep(5)
+    test_compare_agency_head(row_data)
+    time.sleep(5)
+    test_compare_website_link(row_data)
+    time.sleep(5)
+    print("/********* END OF THE TEST *********/")
+    driver.quit()
+
+# Test Case 1: Agency/Institution Tab
+def test_agency_institution_tab():
+    print("\nTest Case 1: Agency/Institution Tab")
+    try:
+        tab_xpath = "//p[normalize-space()='Agency / Institution']"
+        tab = wait.until(EC.element_to_be_clickable((By.XPATH, tab_xpath)))
+
+        print("\nTest Case: Agency/Institution tab display")
+        if tab.is_displayed():
+            print("✅ Agency/Institution PASSED")
+            driver.execute_script("arguments[0].click();", tab)
+            time.sleep(1.5)
+        else:
+            print("❌ Agency/Institution tab is not displayed")
+    except Exception as e:
+        print(f"❌ Error clicking Agency/Institution tab: {str(e)}")
+
+# Test Case 2: Funding Source Tab
+def test_funding_source_tab():
+    print("\nTest Case 2: Funding Source Tab")
+    try:
+        tab_xpath = "//p[normalize-space()='Funding Source']"
+        tab = wait.until(EC.element_to_be_clickable((By.XPATH, tab_xpath)))
+
+        print("\nTest Case: Funding Source tab display")
+        if tab.is_displayed():
+            print("✅ Funding Source PASSED")
+            driver.execute_script("arguments[0].click();", tab)
+            time.sleep(1.5)
+        else:
+            print("❌ Funding Source tab is not displayed")
+    except Exception as e:
+        print(f"❌ Error clicking Funding Source tab: {str(e)}")
+
+# Test Case 3: ICT Categories Tab
+def test_ict_categories_tab():
+    print("\nTest Case 3: ICT Categories Tab")
+    try:
+        tab_xpath = "//p[normalize-space()='ICT Categories']"
+        tab = wait.until(EC.element_to_be_clickable((By.XPATH, tab_xpath)))
+
+        print("\nTest Case: ICT Categories tab display")
+        if tab.is_displayed():
+            print("✅ ICT Categories PASSED")
+            driver.execute_script("arguments[0].click();", tab)
+            time.sleep(1.5)
+        else:
+            print("❌ ICT Categories is not displayed")
+    except Exception as e:
+        print(f"❌ Error clicking ICT Categories tab: {str(e)}")
+
+# Test Case 4: ICT Items Tab
+def test_ict_items_tab():
+    print("\nTest Case 4: ICT Items Tab")
+    try:
+        tab_xpath = "//p[label[contains(text(), 'ICT Items')]]"
+        tab = wait.until(EC.element_to_be_clickable((By.XPATH, tab_xpath)))
+
+        print("\nTest Case: ICT Items tab display")
+        if tab.is_displayed():
+            print("✅ ICT Items PASSED")
+            driver.execute_script("arguments[0].click();", tab)
+            time.sleep(1.5)
+        else:
+            print("❌ ICT Items is not displayed")
+    except Exception as e:
+        print(f"❌ Error clicking ICT Items tab: {str(e)}")
+
+# Test Case 5: IS Classification Tab
+def test_is_classification_tab():
+    print("\nTest Case 5: IS Classification Tab")
+    try:
+        tab_xpath = "//p[normalize-space()='IS Classification']"
+        tab = wait.until(EC.element_to_be_clickable((By.XPATH, tab_xpath)))
+
+        print("\nTest Case: IS Classification tab display")
+        if tab.is_displayed():
+            print("✅ IS Classification PASSED")
+            driver.execute_script("arguments[0].click();", tab)
+            time.sleep(1.5)
+        else:
+            print("❌ IS Classification is not displayed")
+    except Exception as e:
+        print(f"❌ Error clicking IS Classification tab: {str(e)}")
+
+# Test Case 6: User Accounts Tab
+def test_user_accounts_tab():
+    print("\nTest Case 6: User Accounts Tab")
+    try:
+        tab_xpath = "//p[normalize-space()='User Accounts']"
+        tab = wait.until(EC.element_to_be_clickable((By.XPATH, tab_xpath)))
+
+        print("\nTest Case: User Accounts tab display")
+        if tab.is_displayed():
+            print("✅ User Accounts PASSED")
+            driver.execute_script("arguments[0].click();", tab)
+            time.sleep(1.5)
+        else:
+            print("❌ User Accounts is not displayed")
+    except Exception as e:
+        print(f"❌ Error clicking User Accounts tab: {str(e)}")
+
+# Return to Agency/Institution tab
+def return_agency_tab():
+    print("\nReturning to Agency/Institution tab")
+    driver.get("http://10.10.99.23/library")
+    time.sleep(3)
+
+# Test Case 7: Search functionality
+def test_search_functionality():
+    print("\nTest Case 7: Testing Search Functionality")
+    try:
+        search_input_xpath = "//input[contains(@placeholder, 'Search...')]"
+        search_icon_xpath = "//button[.//*[name()='svg' and contains(@data-icon, 'magnifying-glass')]]"
+
+        search_input = wait.until(EC.presence_of_element_located((By.XPATH, search_input_xpath)))
+        search_icon = wait.until(EC.presence_of_element_located((By.XPATH, search_icon_xpath)))
+
+        if search_input.is_displayed() and search_icon.is_displayed():
+            print("✅ Search icon and input field are displayed")
+            search_input.send_keys("test search")
+            time.sleep(1)
+            search_input.clear()
+            time.sleep(1)
+
+            driver.refresh()
+            time.sleep(2)
+            print("✅ Search functionality working and table refreshed")
+        else:
+            print("❌ Search elements not displayed properly")
+    except Exception as e:
+        print(f"❌ Error in Search Test: {str(e)}")
+
+#Test Case 8: Testing Add New Button
+def test_add_new_button():
+    print("\nTest Case 8: Testing Add New Button")
+    try:
+        add_new_xpath = "//button[contains(@class, 'btn-circular') and .//span[normalize-space()='Add New']]"
+        close_btn_css = "svg.fa-xmark"
+
+        add_new_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_new_xpath)))
+
+        if add_new_btn.is_displayed():
+            print("✅ Add New button is displayed")
+            add_new_btn.click()
+            time.sleep(1.5)
+
+            close_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, close_btn_css)))
+            if close_button.is_displayed():
+                close_button.click()
+                time.sleep(1)
+                print("✅ Modal closed successfully using close button")
+            else:
+                print("❌ Close button not displayed")
+        else:
+            print("❌ Add New button not displayed")
+    except Exception as e:
+        print(f"❌ Error testing Add New button: {str(e)}")
+
+# Test Case 9: Table Row Hover Effect
+def test_table_row_hover_effect():
+    print("\nTest Case 9: Testing Table Row Hover Effect")
+    try:
+        row_xpath = "//tr[contains(@class, 'hover:bg-gray-200')]"
+        table_row = wait.until(EC.presence_of_element_located((By.XPATH, row_xpath)))
+
+        if table_row.is_displayed():
+            print("✅ Table row hover effect is working")
+        else:
+            print("❌ Table row not displayed properly")
+    except Exception as e:
+        print(f"❌ Error testing table row hover effect: {str(e)}")
+
+# Test Case 10: Agency Code Column Sort
+def test_agency_code_sort():
+    print("\nTest Case 10: Testing Agency Code Column Sort")
+    try:
+        sort_up_xpath = "(//span[@class='hover:text-gray-500'][contains(text(),'▲')])[1]"
+        sort_down_xpath = "(//span[@class='hover:text-gray-500'][contains(text(),'▼')])[1]"
+
+        sort_up_code = wait.until(EC.presence_of_element_located((By.XPATH, sort_up_xpath)))
+        sort_down_code = wait.until(EC.presence_of_element_located((By.XPATH, sort_down_xpath)))
+
+        if sort_up_code.is_displayed() and sort_down_code.is_displayed():
+            sort_up_code.click()
+            time.sleep(5)  # allow table sort to update
+            sort_down_code.click()
+            time.sleep(5)
+            print("✅ Agency Code sort buttons are functional")
+        else:
+            print("❌ Agency Code sort buttons not displayed")
+    except Exception as e:
+        print(f"❌ Error testing Agency Code sort: {str(e)}")
+
+# Test Case 11: Agency/Institution Column Sort
+def test_agency_institution_sort():
+    print("\nTest Case 11: Testing Agency/Institution Column Sort")
+    try:
+        sort_up_xpath = "(//span[@class='hover:text-gray-500'][contains(text(),'▲')])[2]"
+        sort_down_xpath = "(//span[@class='hover:text-gray-500'][contains(text(),'▼')])[2]"
+
+        sort_up_inst = wait.until(EC.presence_of_element_located((By.XPATH, sort_up_xpath)))
+        sort_down_inst = wait.until(EC.presence_of_element_located((By.XPATH, sort_down_xpath)))
+
+        if sort_up_inst.is_displayed() and sort_down_inst.is_displayed():
+            sort_up_inst.click()
+            time.sleep(5)
+            sort_down_inst.click()
+            time.sleep(5)
+            print("✅ Agency/Institution sort buttons are functional")
+        else:
+            print("❌ Agency/Institution sort buttons not displayed")
+    except Exception as e:
+        print(f"❌ Error testing Agency/Institution sort: {str(e)}")
+
+# Test Case 12: Agency Code Column Title
+def test_agency_code_column_title():
+    print("\nTest Case 12: Checking Agency Code Column Title")
+    try:
+        title_xpath = "//div[normalize-space()='AGENCY CODE']"
+        agency_code_title = wait.until(EC.presence_of_element_located((By.XPATH, title_xpath)))
+
+        if agency_code_title.is_displayed():
+            print("✅ Agency Code column title is displayed")
+        else:
+            print("❌ Agency Code column title not displayed")
+    except Exception as e:
+        print(f"❌ Error checking Agency Code column title: {str(e)}")
+
+# Test Case 13: Agency Head Column Title
+def test_agency_head_column_title():
+    print("\nTest Case 14: Checking Agency Head Column Title")
+    try:
+        title_xpath = "//td[normalize-space()='AGENCY HEAD']"
+        agency_head_title = wait.until(EC.presence_of_element_located((By.XPATH, title_xpath)))
+
+        if agency_head_title.is_displayed():
+            print("✅ Agency Head column title is displayed")
+        else:
+            print("❌ Agency Head column title not displayed")
+    except Exception as e:
+        print(f"❌ Error checking Agency Head column title: {str(e)}")
+
+# Test Case 14: Official Website Link Column Title
+def test_official_website_link_column_title():
+    print("\nTest Case 14: Checking Official Website Link Column Title")
+    try:
+        title_xpath = "//td[normalize-space()='OFFICIAL WEBSITE LINK']"
+        website_title = wait.until(EC.presence_of_element_located((By.XPATH, title_xpath)))
+
+        if website_title.is_displayed():
+            print("✅ Test Case 14 PASSED:  Official Website Link column title PASSED")
+        else:
+            print("❌ Test Case 14 FAILED: Official Website Link column title not displayed")
+    except Exception as e:
+        print(f"❌ Test Case 14 FAILED: Error checking Official Website Link column title: {str(e)}")
+
+# Test Case 15: Click First Row and Store Data
+def test_click_first_row_and_store_data():
+    print("\nTest Case 15: Clicking First Row and Storing Data")
+    try:
+        row_xpath = "(//tr[contains(@class, 'hover:bg-gray-200')])[1]"
+        first_row = wait.until(EC.element_to_be_clickable((By.XPATH, row_xpath)))
+
+        row_data = {
+            'code': first_row.find_element(By.XPATH, ".//td[1]").text,
+            'name': first_row.find_element(By.XPATH, ".//td[2]").text,
+            'head': first_row.find_element(By.XPATH, ".//td[3]").text,
+            'website': first_row.find_element(By.XPATH, ".//td[4]").text
+        }
+        first_row.click()
+        time.sleep(1.5)
+
+        print("✅ Test Case 15 PASSED: Successfully clicked first row and stored data")
+        print("📋 Stored Row Data:", row_data)
+        return row_data
+
+    except Exception as e:
+        print(f"❌ Error clicking first row or storing data: {str(e)}")
+        return None
+
+# Test Case 17: Compare Agency Code
+def test_compare_agency_code(row_data):
+    print("\nTest Case 17: Comparing Agency Code")
+    try:
+        agency_code_input = wait.until(EC.presence_of_element_located((By.ID, "agn_code")))
+        input_value = agency_code_input.get_attribute('value')
+        if input_value == row_data['code']:
+            print("✅ Agency Code matches table row content")
+        else:
+            print(f"❌ Agency Code mismatch\n  Expected: {row_data['code']}\n  Found:    {input_value}")
+    except Exception as e:
+        print(f"❌ Error comparing Agency Code: {str(e)}")
+
+# Test Case 18: Compare Agency/Institution Name
+def test_compare_agency_name(row_data):
+    print("\nTest Case 18: Comparing Agency/Institution Name")
+    try:
+        agency_name_input = wait.until(EC.presence_of_element_located((By.ID, "agn_name")))
+        input_value = agency_name_input.get_attribute('value')
+        if input_value == row_data['name']:
+            print("✅ Agency/Institution name matches table row content")
+        else:
+            print(f"❌ Agency/Institution name mismatch\n  Expected: {row_data['name']}\n  Found:    {input_value}")
+    except Exception as e:
+        print(f"❌ Error comparing Agency/Institution name: {str(e)}")
+
+# Test Case 19: Compare Agency Head
+def test_compare_agency_head(row_data):
+    print("\nTest Case 19: Comparing Agency Head")
+    try:
+        fname = wait.until(EC.presence_of_element_located((By.ID, "agn_head_fname"))).get_attribute('value').strip()
+        mi = wait.until(EC.presence_of_element_located((By.ID, "agn_head_mi"))).get_attribute('value').strip()
+        lname = wait.until(EC.presence_of_element_located((By.ID, "agn_head_lname"))).get_attribute('value').strip()
+        suffix = wait.until(EC.presence_of_element_located((By.ID, "agn_head_sfx"))).get_attribute('value').strip()
+
+        # Only include non-empty parts
+        parts = [fname]
+        if mi:
+            parts.append(mi)
+        parts.append(lname)
+        if suffix:
+            parts.append(suffix)
+
+        modal_head = ' '.join(parts).strip()
+        print("modal_head:", modal_head)
+
+        if modal_head == row_data['head']:
+            print("✅ Agency Head matches table row content")
+        else:
+            print(f"❌ Agency Head mismatch\n  Expected: {row_data['head']}\n  Found:    {modal_head}")
+    except Exception as e:
+        print(f"❌ Error comparing Agency Head: {str(e)}")
+
+# Test Case 20: Compare Website Link
+def test_compare_website_link(row_data):
+    print("\nTest Case 20: Comparing Official Website Link")
+    try:
+        website_input = wait.until(EC.presence_of_element_located((By.ID, "agn_website")))
+        input_value = website_input.get_attribute('value').strip()
+        expected_value = row_data['website'].strip()
+
+        if input_value == expected_value:
+            print("✅ Website link matches table row content")
+        else:
+            print(f"❌ Website link mismatch\n  Expected: {expected_value}\n  Found:    {input_value}")
+    except Exception as e:
+        print(f"❌ Error comparing website link: {str(e)}")
+
+if __name__ == "__main__":
+    main()

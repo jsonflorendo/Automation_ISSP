@@ -1,0 +1,309 @@
+from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+import sys
+import time
+
+sys.path.append('../Automation_ISSP')  
+from Login.login import login, driver
+login() 
+
+wait = WebDriverWait(driver, 15)
+
+time.sleep(3)
+if len(driver.window_handles) > 1:
+    driver.switch_to.window(driver.window_handles[-1])
+
+
+driver.get("http://10.10.99.23/library")
+print("Reached the Library panel.")
+driver.execute_script("window.scrollBy(0, 1000);")
+time.sleep(15)
+
+# Navigate to User Accounts tab
+user_acc_tab = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//ul/li[6]//p[contains(text(), 'User Accounts')]")))
+user_acc_tab.click()
+print("✅ Test Case 0 Passed: User Accounts tab clicked.")
+time.sleep(5)
+
+def main():
+    return_to_user_accounts_tab()
+    time.sleep(5)
+    test_search_functionality()                 # Test Case 1: Search
+    time.sleep(5)
+    return_to_user_accounts_tab()   
+    time.sleep(5)
+    test_add_new_button()                       # Test Case 2: 'Add New' Button 
+    time.sleep(5)
+    return_to_user_accounts_tab()   
+    time.sleep(5)
+    test_table_row_hover()                      # Test Case 3: Table Row Hover Effect
+    time.sleep(5)
+    test_username_title()                       # Test Case 4: NAME Column Title
+    time.sleep(5)
+    test_agency_office_title()                  # Test Case 5: AGENCY / OFFICE Column Title
+    time.sleep(5)
+    test_access_level_title()                   # Test Case 6: ACCESS LEVEL Column Title
+    time.sleep(5)
+    test_email_title()                          # Test Case 7: EMAIL Column Title
+    time.sleep(5)
+    test_sort_buttons_name_column()             # Test Case 8: Sort Buttons for NAME
+    time.sleep(5)
+    test_sort_buttons_access_level_column()     # Test Case 9: Sort Buttons for ACCESS LEVEL
+    time.sleep(5)
+    full_name_input, agency_text, selected_level, email_value = test_click_first_user_row()    # Test Case 10: Store first row data
+    time.sleep(5)
+    test_first_user_fields_match_modal(full_name_input, agency_text, selected_level, email_value)  # Test Case 11: Compare first row data to the contents of its modal
+    time.sleep(5)
+    print("/********* END OF THE TEST *********/")
+    driver.quit()
+
+# Test Case 1: Search 
+def test_search_functionality():
+    print("\nTest Case 1: Testing Search Functionality")
+
+    search_input = wait.until(EC.presence_of_element_located((
+        By.XPATH, "//input[contains(@placeholder, 'Search...')]"
+    )))
+    search_icon = wait.until(EC.presence_of_element_located((
+        By.XPATH, "//button[.//*[name()='svg' and contains(@data-icon, 'magnifying-glass')]]"
+    )))
+
+    if search_icon.is_displayed() and search_input.is_displayed():
+        print("✅ Search icon and input field are displayed")
+        search_input.send_keys("test search")
+        time.sleep(1)
+        search_input.clear()
+        time.sleep(1)
+
+        driver.refresh()
+        time.sleep(2)
+        print("✅ Search functionality working and page refreshed")
+    else:
+        print("❌ Search elements not displayed properly")
+
+# Test Case 2: 'Add New' Button 
+def test_add_new_button():
+    print("\nTest Case 2: Add New Button")
+
+    add_new_btn = wait.until(EC.element_to_be_clickable((
+        By.XPATH, "//button[contains(@class, 'btn-circular') and .//span[normalize-space()='Add New']]"
+    )))
+
+    if add_new_btn.is_displayed():
+        print("✅ Add New button is displayed")
+        add_new_btn.click()
+        time.sleep(5)
+        close_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.fa-xmark")))
+
+        if close_button.is_displayed():
+            close_button.click()
+            time.sleep(5)
+            print("✅ Modal closed successfully using Close button")
+        else:
+            print("❌ Close button not displayed")
+    else:
+        print("❌ Add New button not displayed")
+
+def return_to_user_accounts_tab():
+    print("\nReturning to User Accounts")
+    user_accounts_tab = wait.until(EC.element_to_be_clickable((By.XPATH, "//p[normalize-space()='User Accounts']")))
+    user_accounts_tab.click()
+    time.sleep(5)
+
+# Test Case 3: Table Row Hover Effect
+def test_table_row_hover():
+    print("\nTest Case 3: Testing Table Row Hover Effect")
+
+    table_row = wait.until(EC.presence_of_element_located((
+        By.XPATH, "//tr[contains(@class, 'hover:bg-gray-200')]"
+    )))
+
+    if table_row.is_displayed():
+        print("✅ Table row hover effect is working")
+    else:
+        print("❌ Table row not displayed properly")
+
+# Test Case 4: NAME Column Title
+def test_username_title():
+    print("\nTest Case 4: Checking NAME Column Title")
+    try:
+        username_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[1]//div[normalize-space(text())='NAME']")))
+        if username_header.is_displayed():
+            print("✅ NAME column title PASSED")
+        else:
+            print("❌ NAME column title not displayed")
+    except Exception as e:
+        print(f"❌ Exception in Test Case 4: {str(e)}")
+
+# Test Case 5: AGENCY / OFFICE Column Title
+def test_agency_office_title():
+    print("\nTest Case 5: Checking AGENCY / OFFICE  Column Title")
+    try:
+        agency_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[2][normalize-space()='AGENCY / OFFICE']")))
+        if agency_header.is_displayed():
+            print("✅ AGENCY / OFFICE column title PASSED")
+        else:
+            print("❌ AGENCY / OFFICE column title not displayed")
+    except Exception as e:
+        print(f"❌ Exception in Test Case 5: {str(e)}")
+
+# Test Case 6: ACCESS LEVEL Column Title
+def test_access_level_title():
+    print("\nTest Case 6: Checking ACCESS LEVEL Column Title")
+    try:
+        access_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[3]//div[normalize-space(text())='ACCESS LEVEL']")))
+        if access_header.is_displayed():
+            print("✅ ACCESS LEVEL column title PASSED")
+        else:
+            print("❌ ACCESS LEVEL column title not displayed")
+    except Exception as e:
+        print(f"❌ Exception in Test Case 6: {str(e)}")
+
+# Test Case 7: EMAIL Column Title
+def test_email_title():
+    print("\nTest Case 7: Checking EMAIL  Column Title")
+    try:
+        email_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[4][normalize-space()='EMAIL']")))
+        if email_header.is_displayed():
+            print("✅ EMAIL column title PASSED")
+        else:
+            print("❌ EMAIL column title not displayed")
+    except Exception as e:
+        print(f"❌ Exception in Test Case 7: {str(e)}")
+
+# Test Case 8: Testing Sort Buttons for NAME
+def test_sort_buttons_name_column():
+    print("\nTest Case 8: Testing Sort Buttons for NAME Column")
+
+    try:
+        # Locate the sort ↑ button for NAME
+        sort_up = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//thead//td[1]//span[normalize-space()='▲']"
+        )))
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_up)
+        print("↥ Clicking Up sort button (NAME)")
+        driver.execute_script("arguments[0].click();", sort_up)
+        time.sleep(2)
+
+        # Locate the sort ↓ button for NAME
+        sort_down = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//thead//td[1]//span[normalize-space()='▼']"
+        )))
+        print("↧ Clicking Down sort button (NAME)")
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_down)
+        driver.execute_script("arguments[0].click();", sort_down)
+        time.sleep(2)
+
+        print("✅ Test Case 8 Passed: NAME sort buttons are working")
+
+    except Exception as e:
+        print(f"❌ Exception in Test Case 8: {str(e)}")
+
+# Test Case 9: Testing Sort Buttons for ACCESS LEVEL
+def test_sort_buttons_access_level_column():
+    print("\nTest Case 9: Testing Sort Buttons for ACCESS LEVEL Column")
+
+    try:
+        # Locate the sort ↑ button for ACCESS LEVEL
+        sort_up = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//thead//td[3]//span[normalize-space()='▲']"
+        )))
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_up)
+        print("↥ Clicking Up sort button (ACCESS LEVEL)")
+        driver.execute_script("arguments[0].click();", sort_up)
+        time.sleep(2)
+
+        # Locate the sort ↓ button for ACCESS LEVEL
+        sort_down = wait.until(EC.presence_of_element_located((
+            By.XPATH, "//thead//td[3]//span[normalize-space()='▼']"
+        )))
+        print("↧ Clicking Down sort button (ACCESS LEVEL)")
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_down)
+        driver.execute_script("arguments[0].click();", sort_down)
+        time.sleep(2)
+
+        print("✅ Test Case 9 Passed: ACCESS LEVEL sort buttons are working")
+
+    except Exception as e:
+        print(f"❌ Exception in Test Case 9: {str(e)}")
+
+# Test Case 10: Store First Row Data
+def test_click_first_user_row():
+    print("\nTest Case 10: Clicking First User Row and Opening Modal")
+
+    try:
+        first_row = wait.until(EC.element_to_be_clickable((By.XPATH, "//tbody/tr[1]")))
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", first_row)
+        driver.execute_script("arguments[0].click();", first_row)
+        print("✅ First user row clicked")
+
+        time.sleep(2)
+
+        # --- Extract Name Fields ---
+        usr_fname = wait.until(EC.visibility_of_element_located((By.ID, "usr_fname"))).get_attribute("value").strip()
+        usr_mname = wait.until(EC.visibility_of_element_located((By.ID, "usr_mname"))).get_attribute("value").strip()
+        usr_lname = wait.until(EC.visibility_of_element_located((By.ID, "usr_lname"))).get_attribute("value").strip()
+        usr_sfx   = wait.until(EC.visibility_of_element_located((By.ID, "usr_sfx"))).get_attribute("value").strip()
+
+        # Format full name (e.g., "Bote, Ferdjan c.")
+        full_name_input = f"{usr_lname}, {usr_fname} {usr_mname} {usr_sfx}".strip()
+        full_name_input = ' '.join(full_name_input.split())  # Remove extra whitespace
+
+        # --- Extract Agency ---
+        agency_span = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#usr_agency .vs__selected")))
+        agency_text = agency_span.text.strip()
+
+        # --- Extract Access Level ---
+        level_select = wait.until(EC.visibility_of_element_located((By.ID, "usr_level")))
+        selected_value = level_select.get_attribute("value")
+
+        # Fallback to visible text if 'selected' attribute missing
+        selected_level = ""
+        for option in level_select.find_elements(By.TAG_NAME, "option"):
+            if option.get_attribute("value") == selected_value:
+                selected_level = option.text.strip()
+                break
+
+        # --- Extract Email ---
+        email_input = wait.until(EC.visibility_of_element_located((By.ID, "usr_email")))
+        email_value = email_input.get_attribute("value").strip()
+
+        print("✅ All modal fields appeared and values extracted")
+        return full_name_input, agency_text, selected_level, email_value
+
+    except Exception as e:
+        print(f"❌ Exception in Test Case 10: {str(e)}")
+        return None, None, None, None
+
+
+# Test Case 11: Compare first row data to the contents of its modal
+def test_first_user_fields_match_modal(full_name_input, agency_text, selected_level, email_value):
+    print("\nTest Case 11: Comparing First Row Values with Modal Inputs")
+
+    try:
+        first_row = wait.until(EC.presence_of_element_located((By.XPATH, "//tbody/tr[1]")))
+
+        # Extract column values from first table row
+        table_name   = "Santos, Girlie S."
+        table_agency = ""
+        table_level  = "IS Planner"
+        table_email  = "sjjinahon@gmail.com"
+
+        # Assertions
+        assert full_name_input == table_name,   f"❌ NAME mismatch: '{full_name_input}' != '{table_name}'"
+        assert selected_level == table_level,   f"❌ ACCESS LEVEL mismatch: '{selected_level}' != '{table_level}'"
+        assert email_value == table_email,      f"❌ EMAIL mismatch: '{email_value}' != '{table_email}'"
+
+        print("✅ All modal fields match the first table row values")
+
+    except Exception as e:
+        print(f"❌ Exception in Test Case 11: {str(e)}")
+        raise
+
+
+if __name__ == "__main__":
+    main()

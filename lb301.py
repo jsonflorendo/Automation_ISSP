@@ -38,223 +38,292 @@ except (NoSuchElementException):
     print("Add New button not found or not clickable.")
 time.sleep(15)
 
-modal_title = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//p[contains(@class, 'modal-title') and contains(text(), 'Funding Source')]")))
-funding_label = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//p[contains(@class, 'modal-title') and normalize-space(text())='Funding Source']")))
-fundingCode_label = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH,"//span[@class='flex flex-row label-text' and normalize-space(text())='Funding Source Code']")))      
-fundingName_label = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH,"//span[@class='flex flex-row label-text' and normalize-space(text())='Funding Source Name']")))
+def main():
+    time.sleep(10)
+    test_funding_source_modal_elements(driver, wait)
+    time.sleep(5)
+    test_empty_funding_fields_validation(driver, wait)
+    time.sleep(5)
+    test_valid_funding_source_entry(driver, wait)
+    time.sleep(5)
+    test_cancel_button_closes_modal(driver, wait)
+    time.sleep(5)
+    test_update_funding_source_entry(driver, wait)
+    time.sleep(5)
+    test_delete_funding_source_by_code(driver, wait)
+    time.sleep(5)
+    print("/********* END OF THE TEST *********/")
+    driver.quit()
 
+def test_funding_source_modal_elements(driver, wait):
+    print("\nTest Cases 1–4: Funding Source Modal and Labels")
+    try:
+        elements_to_check = [
+            ("//p[contains(@class, 'modal-title') and contains(text(), 'Funding Source')]", "Funding Source modal appeared"),
+            ("//p[contains(@class, 'modal-title') and normalize-space(text())='Funding Source']", "'Funding Source' label"),
+            ("//span[@class='flex flex-row label-text' and normalize-space(text())='Funding Source Code']", "'Funding Source Code' label"),
+            ("//span[@class='flex flex-row label-text' and normalize-space(text())='Funding Source Name']", "'Funding Source Name' label"),
+        ]
 
-def check_displayed(element, description, index):
-    if element and element.is_displayed():
-        print(f"✅ Test Case {index} Passed: {description} is visible.")
-    else:
-        print(f"❌ Test Case {index} Failed: {description} is not visible.")
-    time.sleep(0.5)
+        for index, (xpath, description) in enumerate(elements_to_check, start=1):
+            try:
+                element = wait.until(EC.visibility_of_element_located((By.XPATH, xpath)))
+                if element.is_displayed():
+                    print(f"✅ Test Case {index} Passed: {description} is visible.")
+                else:
+                    print(f"❌ Test Case {index} Failed: {description} is not visible.")
+            except Exception as e:
+                print(f"❌ Test Case {index} Failed: {description} not found. Error: {str(e)}")
+            time.sleep(0.5)
 
-test_cases = [
-    (modal_title, "Funding Source modal appeared"),
-    (funding_label, "'Funding Source' label"),
-    (fundingCode_label, "'Funding Source Code' label"),
-    (fundingName_label, "'Funding Source Name' label"),
-]
+    except Exception as e:
+        print(f"❌ Error during Funding Source modal tests: {str(e)}")
 
+print("/n/**************FUNDING SOURCE (CREATE) *************/")
 
-for i, (element, description) in enumerate(test_cases, start=1):
-    check_displayed(element, description, i)
+def test_empty_funding_fields_validation(driver, wait):
+    print("\n/***************** TEST CASE 5: Empty entry fields *****************/")
+    try:
+        # Clear both fields
+        code_input = wait.until(EC.presence_of_element_located((By.ID, "fnd_code")))
+        name_input = wait.until(EC.presence_of_element_located((By.ID, "fnd_name")))
 
-print("/n/************** ADD FUNDING SOURCE *************/")
-print("/***************** TEST CASE 5: Empty entry fields *****************/")
-code_input = wait.until(EC.presence_of_element_located((By.ID, "fnd_code")))
-code_input.clear()
-time.sleep(5)
+        code_input.clear()
+        time.sleep(1)
+        name_input.clear()
+        time.sleep(1)
 
-name_input = driver.find_element(By.ID, "fnd_name")
-name_input.clear()
-time.sleep(5)
+        # Click Save
+        save_button = driver.find_element(By.XPATH, "//button[normalize-space()='Save']")
+        save_button.click()
+        time.sleep(2)
 
-save_button = driver.find_element(By.XPATH,"/html/body/div[2]/div[2]/div/div[2]/form/div[5]/button")
-save_button.click()
-time.sleep(5)
+        # Check for error messages
+        error_fnd_code = wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//input[@id='fnd_code']/following-sibling::p[contains(text(), 'required')]"
+        )))
+        error_fnd_name = wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//input[@id='fnd_name']/following-sibling::p[contains(text(), 'required')]"
+        )))
 
-error_fnd_code = WebDriverWait(driver, 5).until(
-    EC.visibility_of_element_located((By.XPATH, "//input[@id='fnd_code']/following-sibling::p[contains(text(), 'required')]"))
-)
-error_fnd_name = driver.find_element(
-    By.XPATH, "//input[@id='fnd_name']/following-sibling::p[contains(text(), 'required')]"
-)
+        if error_fnd_code.is_displayed() and error_fnd_name.is_displayed():
+            print("✅ Test Case 5 Passed: Required field validations displayed.")
+        else:
+            print("❌ Test Case 5 Failed: Required field error missing.")
 
-if error_fnd_code.is_displayed() and error_fnd_name.is_displayed():
-    print("✅ Test Case 5 Passed: Required field validations displayed.")
-else:
-    print("❌ Test Case 5 Failed: Required field error missing.")
+    except Exception as e:
+        print(f"❌ Test Case 5 Failed: Exception occurred during validation test — {str(e)}")
 
-print("/***************** TEST CASE 6: Valid entry inputs *****************/")
-time.sleep(5)
-driver.find_element(By.ID, "fnd_code").send_keys("TEST1")
-time.sleep(1)
-driver.find_element(By.ID, "fnd_name").send_keys("Test Funding Source")
-time.sleep(1)
-save_button.click()
-time.sleep(10)
+def test_valid_funding_source_entry(driver, wait):
+    print("\n/***************** TEST CASE 6: Valid entry inputs *****************/")
+    try:
+        time.sleep(2)
+        # Input values
+        driver.find_element(By.ID, "fnd_code").send_keys("TEST1")
+        time.sleep(1)
+        driver.find_element(By.ID, "fnd_name").send_keys("Test Funding Source")
+        time.sleep(1)
 
-confirmation_popup = WebDriverWait(driver, 15).until(
-    EC.visibility_of_element_located((By.XPATH, "//h2[contains(text(), 'Funding Source added successfully.')]"))
-)
-print("✅ Confirmation popup appeared.")
+        # Click Save
+        save_button = driver.find_element(By.XPATH, "//button[normalize-space()='Save']")
+        save_button.click()
+        time.sleep(2)
 
-ok_button = WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "button.swal2-confirm"))
-)
-ok_button.click()
-print("✅ Confirmation popup dismissed.")
-print("✅ Entry added successfully.")
-time.sleep(15)
+        # Wait for success popup
+        confirmation_popup = wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//h2[contains(text(), 'Funding Source added successfully.')]"
+        )))
+        print("✅ Confirmation popup appeared.")
 
-rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
-last_row = rows[-1]
-columns = last_row.find_elements(By.TAG_NAME, "td")
+        # Click OK on the popup
+        ok_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.swal2-confirm")))
+        ok_button.click()
+        print("✅ Confirmation popup dismissed.")
+        print("✅ Entry added successfully.")
+        time.sleep(3)  
 
-if columns[0].text.strip() == "TEST1" and columns[1].text.strip() == "Test Funding Source":
-    print("✅ Test Case 6 Passed: Entry appears in table.")
-else:
-    print("❌ Test Case 6 Failed: Entry not found or incorrect.")
+        # Look for the added row
+        rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
+        target_row = None
+
+        for row in rows:
+            cells = row.find_elements(By.TAG_NAME, "td")
+            if cells and cells[0].text.strip() == "TEST1":
+                target_row = cells
+                break
+
+        if target_row and target_row[1].text.strip() == "Test Funding Source":
+            print("✅ Test Case 6 Passed: Entry appears in table.")
+        else:
+            print("❌ Test Case 6 Failed: Entry not found or incorrect.")
+    except Exception as e:
+        print(f"❌ Test Case 6 Failed: Exception occurred — {str(e)}")
 
 # Test Case 7: Cancel Button
-time.sleep(5)
-add_new_btn.click()
-WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.ID, "fnd_code")))
-time.sleep(5)
-cancel_btn = driver.find_element(By.XPATH, "//button[normalize-space()='Cancel']")
-cancel_btn.click()
+def test_cancel_button_closes_modal(driver, wait):
+    print("\n/***************** TEST CASE 7: Cancel button closes the modal *****************/")
+    try:
+        time.sleep(2)
+        add_new_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'btn-circular') and .//span[normalize-space()='Add New']]")))
+        add_new_btn.click()
+        wait.until(EC.visibility_of_element_located((By.ID, "fnd_code")))
+        time.sleep(1)
 
-time.sleep(2)
-modal_closed = not driver.find_elements(By.XPATH, "//p[contains(@class, 'modal-title') and contains(text(), 'Funding Source')]")
+        # Click the Cancel button
+        cancel_btn = driver.find_element(By.XPATH, "//button[normalize-space()='Cancel']")
+        cancel_btn.click()
+        time.sleep(2)
 
-if modal_closed:
-    print("✅ Test Case 7 Passed: Cancel button closed the modal.")
-else:
-    print("❌ Test Case 7 Failed: Modal still visible.")
-time.sleep(5)
+        # Check if modal is closed
+        modal_closed = not driver.find_elements(By.XPATH, "//p[contains(@class, 'modal-title') and contains(text(), 'Funding Source')]")
+        if modal_closed:
+            print("✅ Test Case 7 Passed: Cancel button closed the modal.")
+        else:
+            print("❌ Test Case 7 Failed: Modal still visible.")
+    except Exception as e:
+        print(f"❌ Test Case 7 Failed: Exception occurred — {str(e)}")
+
+# Test Case 8: UPDATE
 print("/***************** FUNDING SOURCE (UPDATE) *****************/")
-print("\n/********* TEST CASE 1.8: UPDATING LAST FUNDING SOURCE ENTRY *********/")
+def test_update_funding_source_entry(driver, wait, original_code="TEST1", new_code="TEST1-EDITED", new_name="Test Funding Source-Edited"):
+    print("\n/********* TEST CASE 8: UPDATING LAST FUNDING SOURCE ENTRY *********/")
+    try:
+        time.sleep(2)
+        rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
+        target_row_element = None
 
-# Test Case 8: UPDATE DETAILS
-time.sleep(5)
-rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
-last_row = rows[-1]
-columns = last_row.find_elements(By.TAG_NAME, "td")
-last_row.click()
-print("✅ Last row clicked.")
-time.sleep(10)
+        # Find row with original code
+        for row in rows:
+            cells = row.find_elements(By.TAG_NAME, "td")
+            if cells and cells[0].text.strip() == original_code:
+                target_row_element = row
+                break
 
-code_input = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.ID, "fnd_code"))
-)
-name_input = driver.find_element(By.ID, "fnd_name")
+        if not target_row_element:
+            print(f"❌ Test Case 8 Failed: Row with code '{original_code}' not found.")
+            return
 
-code_input.clear()
-code_input.send_keys("XYZ")
-name_input.clear()
-name_input.send_keys("Example Source")
+        driver.execute_script("arguments[0].click();", target_row_element)
+        print("✅ Row clicked.")
+        time.sleep(2)
 
-save_button = driver.find_element(By.XPATH,"/html/body/div[2]/div[2]/div/div[2]/form/div[5]/button")
-save_button.click()
-print("✅ Save button clicked.")
-time.sleep(10)
+        # Update form inputs
+        code_input = wait.until(EC.visibility_of_element_located((By.ID, "fnd_code")))
+        name_input = driver.find_element(By.ID, "fnd_name")
 
-WebDriverWait(driver, 15).until(
-    EC.visibility_of_element_located((By.XPATH, "//h2[contains(text(), 'updated successfully')]"))
-)
-ok_button = driver.find_element(By.CSS_SELECTOR, "button.swal2-confirm")
-ok_button.click()
-print("✅ Update confirmation popup dismissed.")
+        code_input.clear()
+        code_input.send_keys(new_code)
+        name_input.clear()
+        name_input.send_keys(new_name)
 
-time.sleep(5)
+        # Save changes
+        save_button = driver.find_element(By.XPATH, "//button[normalize-space()='Save']")
+        save_button.click()
+        print("✅ Save button clicked.")
+        time.sleep(5)
 
-rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
-last_row = rows[-1]
-columns = last_row.find_elements(By.TAG_NAME, "td")
+        # Confirmation
+        wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//h2[contains(text(), 'updated successfully')]"
+        )))
+        ok_button = driver.find_element(By.CSS_SELECTOR, "button.swal2-confirm")
+        ok_button.click()
+        print("✅ Update confirmation popup dismissed.")
+        time.sleep(10)
 
-code_val = columns[0].text.strip()
-name_val = columns[1].text.strip()
+        funding_tab = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//ul/li[2]/p[normalize-space()='Funding Source']")))
+        funding_tab.click()
+        time.sleep(10)
 
-if code_val == "XYZ" and name_val == "Example Source":
-    print("✅ Test Case 8 Passed: Updated values reflected in table.")
-else:
-    print(f"❌ Test Case 8 Failed: Mismatch after update → Code: {code_val}, Name: {name_val}")
+        # Verify updated row exists in table
+        updated = False
+        rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
+        for row in rows:
+            cells = row.find_elements(By.TAG_NAME, "td")
+            if cells and cells[0].text.strip() == new_code and cells[1].text.strip() == new_name:
+                updated = True
+                break
 
+        if updated:
+            print("✅ Test Case 8 Passed: Updated values reflected in table.")
+        else:
+            print(f"❌ Test Case 8 Failed: Mismatch after update → Code: {new_code}, Name: {new_name} not found.")
+    
+    except Exception as e:
+        print(f"❌ Test Case 8 Failed: Exception occurred — {str(e)}")
 
-# Test Case 9: DELETING LAST ROW
-print("\n/********* TEST CASE 9: DELETE LAST FUNDING SOURCE ENTRY *********/")
-time.sleep(5)
-rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
-last_row = rows[-1]
-columns = last_row.find_elements(By.TAG_NAME, "td")
+# Test Case 9: DELETE
+def test_delete_funding_source_by_code(driver, wait):
+    print(f"\n/********* TEST CASE 9: DELETE FUNDING SOURCE ENTRY 'TEST1-EDITED' *********/")
+    try:
+        time.sleep(2)
+        funding_tab = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//ul/li[2]/p[normalize-space()='Funding Source']")))
+        funding_tab.click()
+        time.sleep(5)
 
-code_to_delete = columns[0].text.strip()
-name_to_delete = columns[1].text.strip()
+        # Find row with specified code
+        rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
+        target_row = None
+        for row in rows:
+            cols = row.find_elements(By.TAG_NAME, "td")
+            if cols and cols[0].text.strip() == "TEST1-EDITED":
+                target_row = row
+                break
 
-last_row.click()
-print(f"Clicked row with Code: '{code_to_delete}', Name: '{name_to_delete}'")
+        if not target_row:
+            print(f"❌ Test Case 9 Failed: Entry with code 'TEST1-EDITED' not found.")
+            return
 
-WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "fnd_code")))
-time.sleep(5)
+        name_to_delete = target_row.find_elements(By.TAG_NAME, "td")[1].text.strip()
 
-delete_button = WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((
-        By.XPATH, "//button[normalize-space()='Delete']"
-    ))
-)
-time.sleep(5)
-delete_button.click()
-print("✅ Delete button clicked.")
+        # Click the row
+        target_row.click()
+        print(f"✅ Clicked row with Code: 'TEST1-EDITED', Name: '{name_to_delete}'")
+        wait.until(EC.visibility_of_element_located((By.ID, "fnd_code")))
+        time.sleep(1)
 
-WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((
-        By.XPATH, "//h2[normalize-space()='Are you sure you want to delete this item?']"
-    ))
-)
-time.sleep(5)
+        # Click Delete button
+        delete_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Delete']")))
+        delete_button.click()
+        print("✅ Delete button clicked.")
+        time.sleep(5)
+        # Confirm delete popup
+        wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//h2[normalize-space()='Are you sure you want to delete this item?']"
+        )))
+        confirm_button = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//button[text()='Delete' and contains(@class, 'swal2-confirm')]"
+        )))
+        confirm_button.click()
+        print("✅ Confirm delete clicked.")
+        time.sleep(5)
+        # Wait for confirmation message
+        wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//h2[normalize-space()='Funding Source deleted successfully.']"
+        )))
+        print("✅ Delete success popup appeared.")
 
-confirm_delete = WebDriverWait(driver, 5).until(
-    EC.element_to_be_clickable((
-        By.XPATH, "//button[text()='Delete' and contains(@class, 'swal2-confirm')]"
-    ))
-)
-confirm_delete.click()
-print("✅ Confirm delete clicked.")
+        # Click OK on success popup
+        ok_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.swal2-confirm")))
+        ok_button.click()
+        print("✅ Delete success popup dismissed.")
 
-time.sleep(5)
+        # Final verification
+        time.sleep(5)
+        rows_after = driver.find_elements(By.XPATH, "//table//tbody/tr")
+        deleted = all(
+            cols[0].text.strip() != "TEST1-EDITED"
+            for row in rows_after
+            if (cols := row.find_elements(By.TAG_NAME, "td"))
+        )
 
-WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((
-        By.XPATH, "//h2[normalize-space()='Funding Source deleted successfully.']"
-    ))
-)
-print("✅ Delete success popup appeared.")
-time.sleep(5)
+        if deleted:
+            print(f"✅ Test Case 9 Passed: 'TEST1-EDITED' entry successfully deleted.")
+        else:
+            print(f"❌ Test Case 9 Failed: 'TEST1-EDITED' still exists in the table.")
 
-ok_button = WebDriverWait(driver, 5).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "button.swal2-confirm"))
-)
-ok_button.click()
-print("✅ Delete success popup dismissed.")
+    except Exception as e:
+        print(f"❌ Test Case 9 Failed: Exception occurred — {str(e)}")
 
-time.sleep(5)
-rows_after = driver.find_elements(By.XPATH, "//table//tbody/tr")
-
-deleted = True
-for row in rows_after:
-    cols = row.find_elements(By.TAG_NAME, "td")
-    if cols and cols[0].text.strip() == code_to_delete:
-        deleted = False
-        break
-
-if deleted:
-    print(f"✅ Test Case 9 Passed: '{code_to_delete}' entry successfully deleted.")
-else:
-    print(f"❌ Test Case 9 Failed: '{code_to_delete}' still exists in the table.")
-
-time.sleep(10)
-
-print("/********* END OF THE TEST *********/")
+if __name__ == "__main__":
+    main()
