@@ -26,10 +26,10 @@ def SI_000(driver):
         header_1 = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'header_t1')))
         banner = header_1.text.strip()
 
-        print(f"\nTest Case 1 : Display correct banner : REPUBLIC OF THE PHILIPPINES")
+        print(f"\nTest Case 1 : View system banner : System display correct banner, REPUBLIC OF THE PHILIPPINES")
 
         if banner == "REPUBLIC OF THE PHILIPPINES":
-            print(f"✅ Banner found and matched : {banner}")
+            print(f"✅ Passed : {banner}")
         elif banner == "":
             print(f"❌ Banner not found")
         else:
@@ -41,10 +41,10 @@ def SI_000(driver):
         header_2 = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'header_t2')))
         banner = header_2.text.strip()
 
-        print(f"\nTest Case 2 : Display correct banner : DEPARTMENT OF SCIENCE AND TECHNOLOGY")
+        print(f"\nTest Case 2 : View system banner : System display correct banner, DEPARTMENT OF SCIENCE AND TECHNOLOGY")
 
         if banner == "DEPARTMENT OF SCIENCE AND TECHNOLOGY":
-            print(f"✅ Banner found and matched : {banner}")
+            print(f"✅ Passed : {banner}")
         elif banner == "":
             print(f"❌ Banner not found")
         else:
@@ -56,10 +56,10 @@ def SI_000(driver):
         logo_img = wait.until(EC.presence_of_element_located((By.XPATH, "//img[contains(@src, 'dost_logo.png')]")))
         logo_img.is_displayed()
 
-        print(f"\nTest Case 3 : Display correct DOST Logo")
+        print(f"\nTest Case 3 : View agency logo : System display correct logo, DOST Logo")
 
         if logo_img.is_displayed():
-            print(f"✅ DOST Logo is displayed correctly.")
+            print(f"✅ Passed")
         else:
             print(f"❌ DOST Logo not found")
 
@@ -69,10 +69,10 @@ def SI_000(driver):
         logo_img = wait.until(EC.presence_of_element_located((By.XPATH, "//img[contains(@src, 'bagong_pilipinas.png')]")))
         logo_img.is_displayed()
 
-        print(f"\nTest Case 4 : Display correct Bagong Pilipinas Logo")
+        print(f"\nTest Case 4 : View Bagong Pilipinas Logo : System display correct logo, Bagong Pilipinas Logo")
 
         if logo_img.is_displayed():
-            print(f"✅ Bagong Pilipinas Logo is displayed correctly.")
+            print(f"✅ Passed")
         else:
             print(f"❌ Bagong Pilipinas Logo not found")
 
@@ -82,10 +82,10 @@ def SI_000(driver):
         system_name = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'sys_title')))
         system_name = system_name.text.strip()
 
-        print(f"\nTest Case 5 : Display correct system name : ISSP Integrated System")
+        print(f"\nTest Case 5 : View system name : System display correct system name, ISSP Integrated System")
 
         if system_name == "ISSP Integrated System":
-            print(f"✅ System name found and matched : {system_name}")
+            print(f"✅ Passed : {system_name}")
         elif system_name == "":
             print(f"❌ System name not found")
         else:
@@ -97,10 +97,10 @@ def SI_000(driver):
         login_form = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'login-lbl')))
         login_form = login_form.text.strip()
 
-        print(f"\nTest Case 6 : Display correct login form name : Sign In")
+        print(f"\nTest Case 6 : View login form name : Sysem display correct login form name, Sign In")
 
         if login_form == "Sign In":
-            print(f"✅ Login form name found and matched : {login_form}")
+            print(f"✅ Passed : {login_form}")
         elif login_form == "":
             print(f"❌ Login form name not found")
         else:
@@ -112,10 +112,10 @@ def SI_000(driver):
         lbl_email_address = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div[1]/div[1]/div[3]/form/div[2]/label/span')))
         lbl_email_address = lbl_email_address.text.strip()
 
-        print(f"\nTest Case 7 : Display correct label name : Email Address")
+        print(f"\nTest Case 7 : View label name : System display correct label name, Email Address")
 
         if lbl_email_address == "Email Address":
-            print(f"✅ Label name found and matched : {lbl_email_address}")
+            print(f"✅ Passed : {lbl_email_address}")
         elif lbl_email_address == "":
             print(f"❌ Label name not found")
         else:
@@ -127,10 +127,10 @@ def SI_000(driver):
         lbl_password = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div[1]/div[1]/div[3]/form/div[3]/label/span')))
         lbl_password = lbl_password.text.strip()
 
-        print(f"\nTest Case 8 : Display correct label name : Password")
+        print(f"\nTest Case 8 : View label name : System display correct label name, Password")
 
         if lbl_password == "Password":
-            print(f"✅ Label name found and matched : {lbl_password}")
+            print(f"✅ Passed : {lbl_password}")
         elif lbl_password == "":
             print(f"❌ Label name not found")
         else:
@@ -142,10 +142,10 @@ def SI_000(driver):
         lbl_remember_me = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div[1]/div[1]/div[3]/form/div[4]/div/label/span[2]')))
         lbl_remember_me = lbl_remember_me.text.strip()
 
-        print(f"\nTest Case 9 : Display correct label name : Remember me")
+        print(f"\nTest Case 9 : View label name : System display correct label name, Remember me")
 
         if lbl_remember_me == "Remember me":
-            print(f"✅ Label name found and matched : {lbl_remember_me}")
+            print(f"✅ Passed : {lbl_remember_me}")
         elif lbl_remember_me == "":
             print(f"❌ Label name not found")
         else:
@@ -157,10 +157,10 @@ def SI_000(driver):
         lbl_forgot_password = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div[1]/div[1]/div[3]/form/div[4]/div/div/a')))
         lbl_forgot_password = lbl_forgot_password.text.strip()
 
-        print(f"\nTest Case 10 : Display correct label name : Forgot Password?")
+        print(f"\nTest Case 10 : View label name : System display correct label name, Forgot Password?")
 
         if lbl_forgot_password == "Forgot Password?":
-            print(f"✅ Label name found and matched : {lbl_forgot_password}")
+            print(f"✅ Passed : {lbl_forgot_password}")
         elif lbl_forgot_password == "":
             print(f"❌ Label name not found")
         else:
@@ -172,10 +172,10 @@ def SI_000(driver):
         btn_lbl_sign_in = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div[1]/div[1]/div[3]/form/div[5]/button')))
         btn_lbl_sign_in = btn_lbl_sign_in.text.strip()
 
-        print(f"\nTest Case 11 : Display correct label name : Sign in")
+        print(f"\nTest Case 11 : View label name : System display correct label name, Sign in")
 
         if btn_lbl_sign_in == "Sign in":
-            print(f"✅ Button label name found and matched : {btn_lbl_sign_in}")
+            print(f"✅ Passed : {btn_lbl_sign_in}")
         elif btn_lbl_sign_in == "":
             print(f"❌ Button label name not found")
         else:
@@ -187,10 +187,10 @@ def SI_000(driver):
         logo_img = wait.until(EC.presence_of_element_located((By.XPATH, "//img[contains(@src, 'dost_dx.png')]")))
         logo_img.is_displayed()
 
-        print(f"\nTest Case 12 : Display correct DX Logo")
+        print(f"\nTest Case 12 : View DX Logo : System display correct DX Logo")
 
         if logo_img.is_displayed():
-            print(f"✅ DX Logo is displayed correctly.")
+            print(f"✅ Passed")
         else:
             print(f"❌ DX Logo not found")
 
@@ -200,10 +200,10 @@ def SI_000(driver):
         copyright_statement = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div[1]/div[2]/p')))
         copyright_statement = copyright_statement.text.strip()
 
-        print(f"\nTest Case 13 : Display correct Copyright Statement")
+        print(f"\nTest Case 13 : View Copyright Statment : System display correct Copyright Statement")
 
         if copyright_statement == "Copyright 2024 DOST. All rights reserved.":
-            print(f"✅ Copyright Statement found and matched : {copyright_statement}")
+            print(f"✅ Passed : {copyright_statement}")
         elif copyright_statement == "":
             print(f"❌ Copyright Statement not found")
         else:
@@ -221,7 +221,7 @@ def SI_000(driver):
         print(f"\nTest Case 14 : Email Address Input maximum length of 255 (char)")
 
         if character_counter <= 255:
-            print(f"✅ Character limit Passed : {character_counter}")
+            print(f"✅ Passed : {character_counter}")
         else:
             print(f"❌ Character limit must be 255 characters and below")
 
@@ -237,7 +237,7 @@ def SI_000(driver):
         print(f"\nTest Case 15 : Password Input maximum length of 50 (char)")
 
         if character_counter <= 50:
-            print(f"✅ Character limit Passed : {character_counter}")
+            print(f"✅ Passed : {character_counter}")
         else:
             print(f"❌ Character limit must be 50 characters and below")
 
@@ -257,10 +257,10 @@ def SI_000(driver):
         invalid_email_address_error_message = wait.until(EC.presence_of_element_located((By.ID, 'error_email')))
         message_text = invalid_email_address_error_message.text.strip()
 
-        print(f"\nTest Case 16 : Invalid input email format, display error message : Please input a valid email address.")
+        print(f"\nTest Case 16 : Input invalid email format and click Sign In: System display error message, Please input a valid email address.")
 
         if message_text == "Please input a valid email address.":
-            print(f"✅ Invalid Email Address error message Passed")
+            print(f"✅ Passed : {message_text}")
         elif message_text == "":
             print(f"❌ Invalid Email Address error message not found")
         else:
@@ -278,10 +278,10 @@ def SI_000(driver):
         email_address_error_message = wait.until(EC.presence_of_element_located((By.ID, 'error_email')))
         message_text = email_address_error_message.text.strip()
 
-        print(f"\nTest Case 17 : Display Email Address error message.")
+        print(f"\nTest Case 17 : Input email address = empty : System display Email Address error message.")
 
         if message_text == "This field is required.":
-            print(f"✅ Email Address error message Passed")
+            print(f"✅ Passed : {message_text}")
         elif message_text == "":
             print(f"❌ Email Address error message not found")
         else:
@@ -293,10 +293,10 @@ def SI_000(driver):
         password_error_message = wait.until(EC.presence_of_element_located((By.ID, 'error_pwd')))
         message_text = password_error_message.text.strip()
 
-        print(f"\nTest Case 18 : Display Password error message.")
+        print(f"\nTest Case 18 : Input password = empty and click Sign In: System display Password error message.")
 
         if message_text == "This field is required.":
-            print(f"✅ Password error message Passed")
+            print(f"✅ Passed : {message_text}")
         elif message_text == "":
             print(f"❌ Password error message not found")
         else:
@@ -323,10 +323,10 @@ def SI_000(driver):
         message_text = invalid_credentials_error_message.text.strip()
 
         time.sleep(1)
-        print(f"\nTest Case 19 : Display Invalid credentials error message.")
+        print(f"\nTest Case 19 : Input invalid credentials and click Sign In: System display Invalid credentials error message.")
 
         if message_text == "Invalid Email Address / Password.":
-            print(f"✅ Invalid credentials error message Passed")
+            print(f"✅ Passed : {message_text}")
         elif message_text == "":
             print(f"❌ Invalid credentials error message not found")
         else:
@@ -344,10 +344,10 @@ def SI_000(driver):
         eye_icon_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div[1]/div[1]/div[3]/form/div[3]/div[1]/span[2]')))
         eye_icon_button.click()
 
-        print(f"\nTest Case 20 : Eye icon toggle ON, display password characters.")
+        print(f"\nTest Case 20 : Click Eye icon toggle ON : System display password characters.")
 
         if password_showed == password_input:
-            print(f"✅ Eye icon show password Passed")
+            print(f"✅ Passed : {password_showed}")
         else:
             print(f"❌ Eye icon show/hide password is not functioning properly")
 
@@ -359,10 +359,10 @@ def SI_000(driver):
 
         password_showed = password_field.get_attribute("value")
 
-        print(f"\nTest Case 21 : Eye icon toggle OFF, hide password characters.")
+        print(f"\nTest Case 21 : Click Eye icon toggle OFF: System, hide password characters.")
 
         if password_showed == password_input:
-            print(f"✅ Eye icon hide password Passed")
+            print(f"✅ Passed : {password_showed}")
         else:
             print(f"❌ Eye icon show/hide password is not functioning properly")
 
@@ -376,10 +376,10 @@ def SI_000(driver):
         forgot_password_form_name = wait.until(EC.presence_of_element_located((By.XPATH, "//p[@class='mt-4 login-lbl']")))
         forgot_password_form_name = forgot_password_form_name.text.strip()
 
-        print(f"\nTest Case 22 : Click Forgot Password link, redirects to the Forgot Password page.")
+        print(f"\nTest Case 22 : Click Forgot Password link : System redirects to the Forgot Password page.")
 
         if forgot_password_form_name == "Forgot Password?":
-            print(f"✅ Redirected to the Forgot Password page Passed")
+            print(f"✅ Passed")
         else:
             print(f"❌ Forgot Password link did not redirect to the Forgot Password page")
 
@@ -404,10 +404,10 @@ def SI_000(driver):
         dashboard_name = wait.until(EC.presence_of_element_located((By.XPATH, "//p[@class='page-title']")))
         dashboard_name = dashboard_name.text.strip()
 
-        print(f"\nTest Case 23 : Input credentials and click Sign In, redirects to the Dashboard page.")
+        print(f"\nTest Case 23 : Input valid credentials and click Sign In : System redirects to the Dashboard page.")
 
         if dashboard_name == "Dashboard":
-            print(f"✅ Redirected to the Dashboard page Passed")
+            print(f"✅ Passed")
         else:
             print(f"❌ Login process did not redirect to the Dashboard page")
 
