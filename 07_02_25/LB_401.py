@@ -26,10 +26,27 @@ time.sleep(15)
 ict_category_tab = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//ul/li[3]/p[normalize-space()='ICT Categories']")))
 ict_category_tab.click()
 print("✅ Test Case 0 Passed: ICT Categories tab clicked.")
-time.sleep(10)
+time.sleep(5)
 
+add_new_btn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Add New']]")))
+try:
+    add_new_btn.click()
+    print("✅ Add New button clicked.")
+except (NoSuchElementException):
+    print("Add New button not found or not clickable.")
+time.sleep(5)
+
+# Auxillary FUnctions
+def check_displayed(element, description, index):
+    try:
+        assert element and element.is_displayed(), f"❌ Test Case {index} Failed: {description} not found"
+        print(f"✅ Test Case {index}: {description} found successfully")
+    except AssertionError as ae:
+        print(str(ae))
+    time.sleep(1)
 
 def main():
+    time.sleep(5)
     test_ict_item_category_modal()
     time.sleep(5)
     test_empty_ict_category_field()
@@ -52,13 +69,6 @@ def test_ict_item_category_modal():
         input_field = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "cat_name")))
         cancel_btn = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[normalize-space()='Cancel']")))
         save_btn = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[normalize-space()='Save']")))
-
-        def check_displayed(element, description, index):
-            if element and element.is_displayed():
-                print(f"✅ Test Case {index} Passed: {description} is visible.")
-            else:
-                print(f"❌ Test Case {index} Failed: {description} is not visible.")
-            time.sleep(1)
 
         # Run checks
         test_cases = [
@@ -88,10 +98,13 @@ def test_empty_ict_category_field():
         time.sleep(2)
 
         error_msg = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH,"//p[contains(@class, 'text-error') and normalize-space(text())='This field is required.']")))
-        if error_msg and error_msg.is_displayed():
+        
+        try:
+            assert error_msg and error_msg.is_displayed(), "❌ Test Case 6 Failed: Error message not displayed."
             print("✅ Test Case 6 Passed: Required field error message displayed.")
-        else:
-            print("❌ Test Case 6 Failed: Error message not displayed.")
+        except AssertionError as ae:
+            print(str(ae))
+        
     except Exception as e:
         print(f"❌ Exception in Test Case 6: {str(e)}")
 
@@ -125,19 +138,20 @@ def test_valid_ict_category_entry():
         ok_btn.click()
         print("✅ Entry added successfully")
 
-        if success_msg.is_displayed():
+        try:
+            assert success_msg.is_displayed(), "❌ Test Case 7 Failed: Success message not visible."
             print("✅ Test Case 7 Passed: Valid entry accepted and success message displayed.")
-        else:
-            print("❌ Test Case 7 Failed: Success message not visible.")
+        except AssertionError as ae:
+            print(str(ae))
 
     except Exception as e:
         print(f"❌ Exception in Test Case 7: {str(e)}")
 
     time.sleep(5)
 
-print("/*********  ICT Item Category (UPDATE) *********/")
-
 def test_update_ict_category_entry():
+    print("/*********  ICT Item Category (UPDATE) *********/")
+
     old_value="ICT_CATEGORY_TEST"
     new_value="ICT_CATEGORY_RETEST"
 
@@ -189,10 +203,11 @@ def test_update_ict_category_entry():
             for row in rows if row.find_elements(By.TAG_NAME, "td")
         )
 
-        if update_found:
+        try:
+            assert update_found, "❌ Test Case 8 Failed: Update not reflected on the table."
             print("✅ Test Case 8 Passed: Update reflected on the table.")
-        else:
-            print("❌ Test Case 8 Failed: Update not reflected on the table.")
+        except AssertionError as ae:
+            print(str(ae))
 
     except Exception as e:
         print(f"❌ Test Case 8 Failed: Exception occurred - {str(e)}")
@@ -261,10 +276,11 @@ def test_delete_ict_category_entry():
             for row in rows if row.find_elements(By.TAG_NAME, "td")
         )
 
-        if deleted:
+        try:
+            assert deleted, f"❌ Test Case 9 Failed: '{category_name}' still exists in the table."
             print(f"✅ Test Case 9 Passed: '{category_name}' entry successfully deleted.")
-        else:
-            print(f"❌ Test Case 9 Failed: '{category_name}' still exists in the table.")
+        except AssertionError as ae:
+            print(str(ae))
 
     except Exception as e:
         print(f"❌ Test Case 9 Failed: Exception occurred - {str(e)}")

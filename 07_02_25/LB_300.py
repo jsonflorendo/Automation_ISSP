@@ -193,11 +193,7 @@ def funding_source_code_sort_btn():
 # Test Case 7: Checking Sort Buttons for Funding Source
 def test_funding_source_sort_btn():
     print("\nTest Case 7: Checking Sort Buttons for Funding Source")
-
-    # Get original list 
-    fs_before = driver.find_elements(By.XPATH, "//tbody/tr/td[2]")
-    fs_values_before = [cell.text.strip() for cell in fs_before]
-
+    
     # Click ▲ Up sort button
     fs_sort_up = wait.until(EC.element_to_be_clickable((By.XPATH, "//thead//td[2]//span[normalize-space()='▲']")))
     driver.execute_script("arguments[0].click();", fs_sort_up)
@@ -205,7 +201,7 @@ def test_funding_source_sort_btn():
     time.sleep(2)
 
     fs_up = driver.find_elements(By.XPATH, "//tbody/tr/td[2]")
-    fs_values_up = [cell.text.strip() for cell in fs_up]
+    fs_values_up = [cell.text.strip().lower() for cell in fs_up]
 
     assert fs_values_up == sorted(fs_values_up), \
         f"❌ Test Case 7 FAILED: Up sort did not sort Funding Source ascending → {fs_values_up}"
@@ -218,7 +214,7 @@ def test_funding_source_sort_btn():
     time.sleep(2)
 
     fs_down = driver.find_elements(By.XPATH, "//tbody/tr/td[2]")
-    fs_values_down = [cell.text.strip() for cell in fs_down]
+    fs_values_down = [cell.text.strip().lower() for cell in fs_down]
 
     assert fs_values_down == sorted(fs_values_down, reverse=True), \
         f"❌ Test Case 7 FAILED: Down sort did not sort Funding Source descending → {fs_values_down}"

@@ -40,7 +40,6 @@ def is_duplicate_error_displayed(field_id):     # TEST CASE 16
     except:
         return False
 
-
 # Click 'Add New' button
 wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Add New']"))).click()
 print("Add New button clicked.")

@@ -305,9 +305,6 @@ def test_agency_institution_sort():
     print("\nTest Case 11: Testing Agency/Institution Column Sort")
 
     try:
-        rows_before = driver.find_elements(By.XPATH, "//tbody/tr/td[2]")
-        names_before = [r.text.strip() for r in rows_before]
-
         # Click ▲ Up sort
         sort_up = wait.until(EC.element_to_be_clickable(
             (By.XPATH, "(//span[@class='hover:text-gray-500'][contains(text(),'▲')])[2]")))
