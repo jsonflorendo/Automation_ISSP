@@ -197,7 +197,7 @@ def test_search_functionality():
     except Exception as e:
         print(f"❌ Error in Search Test: {str(e)}")
 
-#Test Case 8: Testing Add New Button
+#Test Case 8:  Add New Button
 def test_add_new_button():
     print("\nTest Case 8: Testing Add New Button")
     try:
@@ -249,7 +249,7 @@ def test_agency_code_sort():
 
         if sort_up_code.is_displayed() and sort_down_code.is_displayed():
             sort_up_code.click()
-            time.sleep(5)  # allow table sort to update
+            time.sleep(5)  
             sort_down_code.click()
             time.sleep(5)
             print("✅ Agency Code sort buttons are functional")
@@ -345,7 +345,7 @@ def test_click_first_row_and_store_data():
         print(f"❌ Error clicking first row or storing data: {str(e)}")
         return None
 
-# Test Case 17: Compare Agency Code
+# Test Case 17: Compare Agency Code from the table and modal
 def test_compare_agency_code(row_data):
     print("\nTest Case 17: Comparing Agency Code")
     try:
@@ -358,7 +358,7 @@ def test_compare_agency_code(row_data):
     except Exception as e:
         print(f"❌ Error comparing Agency Code: {str(e)}")
 
-# Test Case 18: Compare Agency/Institution Name
+# Test Case 18: Compare Agency/Institution Name from the table and modal
 def test_compare_agency_name(row_data):
     print("\nTest Case 18: Comparing Agency/Institution Name")
     try:
@@ -371,7 +371,7 @@ def test_compare_agency_name(row_data):
     except Exception as e:
         print(f"❌ Error comparing Agency/Institution name: {str(e)}")
 
-# Test Case 19: Compare Agency Head
+# Test Case 19: Compare Agency Head from the table and modal
 def test_compare_agency_head(row_data):
     print("\nTest Case 19: Comparing Agency Head")
     try:
@@ -380,16 +380,15 @@ def test_compare_agency_head(row_data):
         lname = wait.until(EC.presence_of_element_located((By.ID, "agn_head_lname"))).get_attribute('value').strip()
         suffix = wait.until(EC.presence_of_element_located((By.ID, "agn_head_sfx"))).get_attribute('value').strip()
 
-        # Only include non-empty parts
         parts = [fname]
         if mi:
             parts.append(mi)
         parts.append(lname)
         if suffix:
             parts.append(suffix)
-
         modal_head = ' '.join(parts).strip()
-        print("modal_head:", modal_head)
+
+        # print("modal_head:", modal_head)
 
         if modal_head == row_data['head']:
             print("✅ Agency Head matches table row content")
@@ -398,7 +397,7 @@ def test_compare_agency_head(row_data):
     except Exception as e:
         print(f"❌ Error comparing Agency Head: {str(e)}")
 
-# Test Case 20: Compare Website Link
+# Test Case 20: Compare Website Link from the table and modal
 def test_compare_website_link(row_data):
     print("\nTest Case 20: Comparing Official Website Link")
     try:

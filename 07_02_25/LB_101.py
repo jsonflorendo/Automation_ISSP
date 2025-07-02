@@ -4,8 +4,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 import sys
 import time 
+import os
 
 sys.path.append('../Automation_ISSP')
 from Login.login import login, driver
@@ -13,75 +15,98 @@ from Login.login import login, driver
 login()
 wait = WebDriverWait(driver, 15)
 
-# Navigate to Library and open 'Add New'
+# Navigate to Library
 if len(driver.window_handles) > 1:
     driver.switch_to.window(driver.window_handles[-1])
 driver.get("http://10.10.99.23/library")
 print("Reached the Library panel.")
 driver.execute_script("window.scrollBy(0, 1000);")
 time.sleep(5)
+
+# Auxillary functions
+def check_element(element, description, index): # TEST CASE 1-13
+    if element:
+        print(f"✅ Test Case {index}: {description} found successfully")
+    else:
+        print(f"❌ Test Case {index} Failed: {description} not found")
+    time.sleep(1)
+
+def is_duplicate_error_displayed(field_id):     # TEST CASE 16
+    try:
+        container = driver.find_element(By.XPATH, f"//input[@id='{field_id}']/parent::*")
+        error = container.find_element(By.CSS_SELECTOR, "p.text-error")
+        return "already exists" in error.text and error.is_displayed()
+    except:
+        return False
+
+
+# Click 'Add New' button
 wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Add New']"))).click()
 print("Add New button clicked.")
 
+# Main function
 def main():
     time.sleep(5)
-    test_agency_modal_elements()
+    test_agency_modal_elements()    
     time.sleep(5)
-    test_empty_fields(driver)
+    test_agency_logo_image_upload()
     time.sleep(5)
-    test_duplicate_entry(driver)
+    test_empty_fields()
     time.sleep(5)
-    test_invalid_website_link(driver)
+    test_duplicate_entry()
     time.sleep(5)
-    test_invalid_field_formats(driver)
+    test_invalid_website_link()
     time.sleep(5)
-    test_valid_entry_addition(driver)
+    test_invalid_field_formats()
     time.sleep(5)
-    test_cancel_button_redirect(driver)
+    test_valid_entry_addition()
     time.sleep(5)
-    update_recent_agency_entry(driver)
+    test_cancel_button_redirect()
     time.sleep(5)
-    delete_recent_agency_entry(driver)
+    update_recent_agency_entry()
+    time.sleep(5)
+    delete_recent_agency_entry()
     time.sleep(5)
     
     driver.quit()
 
-
 # TEST CASE 1-13: Labels, inputs, buttons, and modal checking
 def test_agency_modal_elements():
-
-    def check_element(element, description, index):
-        if element:
-            print(f"✅ Test Case {index}: {description} found successfully")
-        else:
-            print(f"❌ Test Case {index} Failed: {description} not found")
-        time.sleep(1)
-
-    # TEST CASE 1-13: Labels, inputs, buttons, and modal checking
     time.sleep(5)
-    agencyLogo_label            = driver.find_element(By.XPATH, "//span[contains(@class, 'label-text') and contains(text(), 'Agency Logo')]")
-    agencyLogo_modal            = driver.find_element(By.XPATH,"//div[contains(@class, 'drop-zone')]")
-    agency_modal                = driver.find_element(By.XPATH, "//div[contains(@class, 'rounded-pnl')]//p[contains(text(), 'Agency / Institution')]/ancestor::div[contains(@class, 'rounded-pnl')]//form")
-    agencyName_label            = driver.find_element(By.XPATH, "//span[contains(@class, 'label-text') and contains(text(), 'Agency Name')]")
-    agencyName_input            = driver.find_element(By.XPATH, "//input[@id='agn_name']")
-    alias_label                 = driver.find_element(By.XPATH, "//span[contains(text(), 'Alias') and .//i[contains(text(), '(short name)')]]")
-    alias_input                 = driver.find_element(By.XPATH, "//input[@id='agn_code']")
-    agencyGroup_label           = driver.find_element(By.XPATH, "//span[contains(text(), 'Agency Group')]")
-    agencyGroup_dropdown        = driver.find_element(By.XPATH, "//select[@id='agn_group']")
-    agencyLink_label            = driver.find_element(By.XPATH, "//span[contains(text(), 'Agency Official Website Link')]")
-    agencyLink_input            = driver.find_element(By.XPATH, "//input[@id='agn_website']")
-    agencyHeadName_label        = driver.find_element(By.XPATH, "//span[contains(text(), 'Name of Agency Head')]")
-    agencyHeadFirstName_input   = driver.find_element(By.XPATH, "//input[@id='agn_head_fname']")
-    agencyHeadMI_input          = driver.find_element(By.XPATH, "//input[@id='agn_head_mi']")
-    agencyHeadSurname_input     = driver.find_element(By.XPATH, "//input[@id='agn_head_lname']")
-    agencyHeadSuffix_input      = driver.find_element(By.XPATH, "//input[@id='agn_head_sfx']")
-    close_button                = driver.find_element(By.CSS_SELECTOR, "svg.fa-xmark")
-    cancel_button               = driver.find_element(By.XPATH, "//button[normalize-space()='Cancel']")
-    save_button                 = driver.find_element(By.XPATH, "//button[normalize-space()='Save']")
+
+    # Elements for Agency Logo and Upload Modal
+    agencyLogo_label = driver.find_element(By.XPATH, "//span[contains(@class, 'label-text') and contains(text(), 'Agency Logo')]")
+    agencyLogo_upload_modal = driver.find_element(By.XPATH, "//div[contains(@class, 'image-upload') and contains(@class, 'small-upload')]")
+
+    # Form section
+    agency_modal = driver.find_element(By.XPATH, "//div[contains(@class, 'rounded-pnl')]//p[contains(text(), 'Agency / Institution')]/ancestor::div[contains(@class, 'rounded-pnl')]//form")
+
+    # Labels and Inputs
+    agencyName_label = driver.find_element(By.XPATH, "//span[contains(@class, 'label-text') and contains(text(), 'Agency Name')]")
+    agencyName_input = driver.find_element(By.XPATH, "//input[@id='agn_name']")
+
+    alias_label = driver.find_element(By.XPATH, "//span[contains(text(), 'Alias') and .//i[contains(text(), '(short name)')]]")
+    alias_input = driver.find_element(By.XPATH, "//input[@id='agn_code']")
+
+    agencyGroup_label = driver.find_element(By.XPATH, "//span[contains(text(), 'Agency Group')]")
+    agencyGroup_dropdown = driver.find_element(By.XPATH, "//select[@id='agn_group']")
+
+    agencyLink_label = driver.find_element(By.XPATH, "//span[contains(text(), 'Agency Official Website Link')]")
+    agencyLink_input = driver.find_element(By.XPATH, "//input[@id='agn_website']")
+
+    agencyHeadName_label = driver.find_element(By.XPATH, "//span[contains(text(), 'Name of Agency Head')]")
+    agencyHeadFirstName_input = driver.find_element(By.XPATH, "//input[@id='agn_head_fname']")
+    agencyHeadMI_input = driver.find_element(By.XPATH, "//input[@id='agn_head_mi']")
+    agencyHeadSurname_input = driver.find_element(By.XPATH, "//input[@id='agn_head_lname']")
+    agencyHeadSuffix_input = driver.find_element(By.XPATH, "//input[@id='agn_head_sfx']")
+
+    close_button = driver.find_element(By.CSS_SELECTOR, "svg.fa-xmark")
+    cancel_button = driver.find_element(By.XPATH, "//button[normalize-space()='Cancel']")
+    save_button = driver.find_element(By.XPATH, "//button[normalize-space()='Save']")
 
     print("/*********Agency / Institution*********/")
     test_cases = [
-        (agencyLogo_label and agencyLogo_modal, "Agency Logo and Upload Modal"),
+        (agencyLogo_label and agencyLogo_upload_modal, "'Agency Logo' label and 'Upload Modal"),
         (agency_modal, "Agency/Institution form"),
         (agencyName_label and agencyName_input, "'Agency Name' label and input"),
         (alias_label and alias_input, "'Alias' label and input"),
@@ -98,13 +123,67 @@ def test_agency_modal_elements():
     ]
 
     for i, (condition, description) in enumerate(test_cases):
-            check_element(condition, description, i)
+        check_element(condition, description, i)
+
     time.sleep(5)
 
-# TEST CASE 14: All inputs left with empty fields
-def test_empty_fields(driver):
+# TEST CASE 14: Uploading Agency Logo Image
+def test_agency_logo_image_upload():
+    print("\nTest Case 14: Uploading and Removing Agency Logo Image with Confirmation and Success Alert")
+
+    image_path = r"C:\xampp\htdocs\Automation_ISSP\07_02_25\source\DOST_Logo.png"
+
+    if not os.path.exists(image_path):
+        print("❌ Test Failed: Image file not found at path:", image_path)
+        return
+
+    try:
+        wait = WebDriverWait(driver, 10)
+
+        # Reveal  file input and upload image
+        file_input = driver.find_element(By.XPATH, "//div[contains(@class, 'image-upload')]//input[@type='file']")
+        driver.execute_script("arguments[0].style.display = 'block';", file_input)
+        file_input.send_keys(image_path)
+
+        wait.until(EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'image-preview')]//img")))
+        wait.until(EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'image-preview')]//span[contains(text(), 'DOST_Logo.png')]")))
+
+        print("✅ Test Case 14 Passed: Image uploaded and preview displayed successfully")
+        time.sleep(1)
+
+        # Click the X icon
+        delete_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'image-preview')]//span[contains(@class, 'delete-icon')]")
+        driver.execute_script("arguments[0].click();", delete_icon)
+        time.sleep(2)
+        # Wait and click "Delete" in first confirmation modal
+        delete_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'swal2-confirm') and normalize-space(text())='Delete']")))
+        delete_button.click()
+        time.sleep(2)
+        # Wait and click "OK" in success modal
+        ok_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'swal2-confirm') and normalize-space(text())='OK']")))
+        ok_button.click()
+        time.sleep(2)
+        # Wait for preview to disappear
+        preview_removed = False
+        try:
+            wait.until(EC.invisibility_of_element_located((By.XPATH, "//div[contains(@class, 'image-preview')]")))
+            preview_removed = True
+        except:
+            preview_removed = False
+
+        if preview_removed:
+            print("✅ Remove Success: Image preview removed after OK confirmation")
+        else:
+            print("❌ Remove Failed: Image preview still present")
+
+    except Exception as e:
+        print("❌ Test Case 14 Failed with Exception:", str(e))
+
+
+# TEST CASE 15: All inputs left with empty fields
+def test_empty_fields():
     print("********* ADD AGENCY: ERROR TEST CASES *********/")
-    print("\n/********* TEST CASE 14: Empty Entry Fields *********/")
+    print("\n/********* TEST CASE 15: Empty Entry Fields *********/")
     time.sleep(5)
     save_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Save']"))
@@ -144,13 +223,13 @@ def test_empty_fields(driver):
             all_passed = False
 
     if all_passed:
-        print("✅ Test Case 14 Passed: All required field errors displayed correctly.")
+        print("✅ Test Case 15 Passed: All required field errors displayed correctly.")
     else:
-        print("❌ Test Case 14 Failed: Missing or incorrect error messages.")
+        print("❌ Test Case 15 Failed: Missing or incorrect error messages.")
 
-# TEST CASE 15: Duplicate Agency Registration
-def test_duplicate_entry(driver):
-    print("\n/********* TEST CASE 15: Duplicate Entry *********/")
+# TEST CASE 16: Duplicate Agency Registration
+def test_duplicate_entry():
+    print("\n/********* TEST CASE 16: Duplicate Entry *********/")
 
     duplicate_data = {
         "agn_name": "Central Office",
@@ -174,35 +253,27 @@ def test_duplicate_entry(driver):
     save_button.click()
     print("Save button clicked.")
 
-    # Wait for any error message related to duplication to appear
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Agency')]"))
     )
     time.sleep(1)
-
-    def is_duplicate_error_displayed(field_id):
-        try:
-            container = driver.find_element(By.XPATH, f"//input[@id='{field_id}']/parent::*")
-            error = container.find_element(By.CSS_SELECTOR, "p.text-error")
-            return "already exists" in error.text and error.is_displayed()
-        except:
-            return False
+        
     time.sleep(5)
     agency_name_ok = is_duplicate_error_displayed("agn_name")
     website_ok = is_duplicate_error_displayed("agn_website")
 
     if agency_name_ok and website_ok:
-        print("✅ Test Case 15 Passed: Duplicate Agency Name and Website errors are shown.")
+        print("✅ Test Case 16 Passed: Duplicate Agency Name and Website errors are shown.")
     else:
-        print("❌ Test Case 15 Failed:")
+        print("❌ Test Case 16 Failed:")
         if not agency_name_ok:
             print(" - Agency Name duplicate error not found or not visible.")
         if not website_ok:
             print(" - Website duplicate error not found or not visible.")
             
-# TEST CASE 16:Invalid Website Link Format
-def test_invalid_website_link(driver):
-    print("\n/********* TEST CASE 16: Invalid Website Link *********/")
+# TEST CASE 17:Invalid Website Link Format
+def test_invalid_website_link():
+    print("\n/********* TEST CASE 17: Invalid Website Link *********/")
 
     invalid_url = "Lorem ipsum dolor sit amet, consectetuer adipiscing"
 
@@ -228,15 +299,15 @@ def test_invalid_website_link(driver):
             )
         )
         if error_elem.is_displayed():
-            print("✅ Test Case 16 Passed: Invalid website URL error appeared.")
+            print("✅ Test Case 17 Passed: Invalid website URL error appeared.")
         else:
-            print("❌ Test Case 16 Failed: Error message not visible.")
+            print("❌ Test Case 17 Failed: Error message not visible.")
     except:
-        print("❌ Test Case 16 Failed: Validity error message not found.")
+        print("❌ Test Case 17 Failed: Validity error message not found.")
 
-# TEST CASE 17: Other Invalid Formats
-def test_invalid_field_formats(driver):
-    print("\n/********* TEST CASE 17: Invalid Formats *********/")
+# TEST CASE 18: Other Invalid Formats
+def test_invalid_field_formats():
+    print("\n/********* TEST CASE 18: Invalid Formats *********/")
 
     long_input = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo"
 
@@ -296,14 +367,14 @@ def test_invalid_field_formats(driver):
             all_passed = False
 
     if all_passed:
-        print("\n✅ Test Case 17 Passed: All invalid format errors appeared as expected.")
+        print("\n✅ Test Case 18 Passed: All invalid format errors appeared as expected.")
     else:
-        print("\n❌ Test Case 17 Failed: One or more error messages missing or incorrect.")
+        print("\n❌ Test Case 18 Failed: One or more error messages missing or incorrect.")
 
-print("\n/********* ADD AGENCY: SUCCESSFUL TEST CASE *********/")
-# TEST CASE 18: Valid Inputs
-def test_valid_entry_addition(driver):
-    print("\n/********* TEST CASE 18: Valid Entry Inputs *********/")
+# TEST CASE 19: Valid Inputs with agency code 'ASTIDEMO'
+def test_valid_entry_addition():
+    print("\n/********* CREATE AGENCY/INSTITUTION: SUCCESSFUL TEST CASE *********/")
+    print("\n/********* TEST CASE 19: Valid Entry Inputs *********/")
     
      # Clear relevant fields
     agencyName_input = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "agn_name")))
@@ -391,17 +462,17 @@ def test_valid_entry_addition(driver):
         }
 
         if actual_values == expected_values:
-            print("✅ Test Case 18 Passed: All values matched in the identified row.")
+            print("✅ Test Case 19 Passed: All values matched in the identified row.")
         else:
-            print("❌ Test Case 18 Failed: Data mismatch in one or more columns.")
+            print("❌ Test Case 19 Failed: Data mismatch in one or more columns.")
             for key in expected_values:
                 print(f" - {key.capitalize()}: expected '{expected_values[key]}', got '{actual_values[key]}'")
     else:
-        print("❌ Test Case 18 Failed: Could not find row with alias 'ASTIDEMO'")
+        print("❌ Test Case 19 Failed: Could not find row with alias 'ASTIDEMO'")
 
-# TEST CASE 19: Buttons
-def test_cancel_button_redirect(driver):
-    print("\n/********* TEST CASE 19: Buttons *********/")
+# TEST CASE 20: Buttons
+def test_cancel_button_redirect():
+    print("\n/********* TEST CASE 20: Buttons *********/")
 
     try:
         # Wait and click 'Add New'
@@ -429,32 +500,30 @@ def test_cancel_button_redirect(driver):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//p[@class='mt-5 page-title' and text()='Library']"))
         )
-        print("✅ Test Case 19 Passed: Redirected to Library page after Cancel.")
+        print("✅ Test Case 20 Passed: Redirected to Library page after Cancel.")
     except:
-        print("❌ Test Case 19 Failed: 'Library' title not found after Cancel.")
+        print("❌ Test Case 20 Failed: 'Library' title not found after Cancel.")
 
-# TEST CASE 20: Update Entry
-def update_recent_agency_entry(driver):
-    print("\n\n/********* TEST CASE 20: UPDATE Recent Agency Entry *********/")
+# TEST CASE 21: Update Entry with agency code 'ASTIDEMO'
+def update_recent_agency_entry():
+    print("\n\n/********* TEST CASE 21: UPDATE Recent Agency Entry *********/")
     
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//table//tbody/tr")))
 
     rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
     target_row = None
+    
     for row in rows:
         cells = row.find_elements(By.TAG_NAME, "td")
         if cells and cells[0].text.strip() == "ASTIDEMO":
             target_row = row
             break
 
-    print("\n")
-
     if target_row:
         target_row.click()
         print("✅ Target row clicked. Modal should appear.")
         
-
-    time.sleep(5)  # Wait for modal or form to be ready
+    time.sleep(5)  
 
     # Locate input fields
     agencyName_input            = driver.find_element(By.ID, "agn_name")
@@ -548,14 +617,14 @@ def update_recent_agency_entry(driver):
         agency_head_val == expected_values["agency_head"] and
         website_val == expected_values["website"]
     ):
-        print("✅ Test Case 20 Passed: Agency updated and reflected correctly in the table.")
+        print("✅ Test Case 21 Passed: Agency updated and reflected correctly in the table.")
     else:
-        print("❌ Test Case 20 Failed: One or more values did not update correctly.")
+        print("❌ Test Case 21 Failed: One or more values did not update correctly.")
 
-# TEST CASE 21: Delete Entry
-def delete_recent_agency_entry(driver):
+# TEST CASE 22: Delete Entry with agency code 'ASTIDEMO'
+def delete_recent_agency_entry():
     target_alias="ASTIDEMO"
-    print("\n\n/********* TEST CASE 21: DELETE Recent Agency Entry *********/")
+    print("\n\n/********* TEST CASE 22: DELETE Recent Agency Entry *********/")
     time.sleep(10)
 
     WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//table//tbody/tr")))
@@ -645,17 +714,19 @@ def delete_recent_agency_entry(driver):
         return
 
     rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
+    
     remaining_aliases = [
         row.find_elements(By.TAG_NAME, "td")[0].text.strip()
         for row in rows if row.find_elements(By.TAG_NAME, "td")
     ]
+
     if alias_to_delete:
         if alias_to_delete not in remaining_aliases:
-            print(f"✅ Test Case 21 Passed: '{alias_to_delete}' entry successfully deleted from the table.")
+            print(f"✅ Test Case 22 Passed: '{alias_to_delete}' entry successfully deleted from the table.")
         else:
-            print(f"❌ Test Case 21 Failed: '{alias_to_delete}' still found in the table.")
+            print(f"❌ Test Case 22 Failed: '{alias_to_delete}' still found in the table.")
     else:
-        print("❌ Test Case 21 Failed: Could not capture alias_to_delete for verification.")
+        print("❌ Test Case 22 Failed: Could not capture alias_to_delete for verification.")
 
     print("/********* END OF THE TEST *********/")
 
