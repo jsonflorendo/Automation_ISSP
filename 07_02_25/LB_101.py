@@ -25,10 +25,11 @@ time.sleep(5)
 
 # Auxillary functions
 def check_element(element, description, index): # TEST CASE 1-13
-    if element:
+    try:
+        assert element, f"❌ Test Case {index} Failed: {description} not found"
         print(f"✅ Test Case {index}: {description} found successfully")
-    else:
-        print(f"❌ Test Case {index} Failed: {description} not found")
+    except AssertionError as ae:
+        print(str(ae))
     time.sleep(1)
 
 def is_duplicate_error_displayed(field_id):     # TEST CASE 16
@@ -134,7 +135,7 @@ def test_agency_logo_image_upload():
     image_path = r"C:\xampp\htdocs\Automation_ISSP\07_02_25\source\DOST_Logo.png"
 
     if not os.path.exists(image_path):
-        print("❌ Test Failed: Image file not found at path:", image_path)
+        print("❌ Test Failed 14: Image file not found at path:", image_path)
         return
 
     try:
@@ -171,14 +172,14 @@ def test_agency_logo_image_upload():
         except:
             preview_removed = False
 
-        if preview_removed:
+        try:
+            assert preview_removed, "❌ Remove Failed: Image preview still present"
             print("✅ Remove Success: Image preview removed after OK confirmation")
-        else:
-            print("❌ Remove Failed: Image preview still present")
+        except AssertionError as ae:
+            print(str(ae))
 
     except Exception as e:
         print("❌ Test Case 14 Failed with Exception:", str(e))
-
 
 # TEST CASE 15: All inputs left with empty fields
 def test_empty_fields():
@@ -222,10 +223,11 @@ def test_empty_fields():
             print(f"❌ {label}: Error message not found.")
             all_passed = False
 
-    if all_passed:
+    try:
+        assert all_passed, "❌ Test Case 15 Failed: Missing or incorrect error messages."
         print("✅ Test Case 15 Passed: All required field errors displayed correctly.")
-    else:
-        print("❌ Test Case 15 Failed: Missing or incorrect error messages.")
+    except AssertionError as ae:
+        print(str(ae))
 
 # TEST CASE 16: Duplicate Agency Registration
 def test_duplicate_entry():
@@ -256,21 +258,22 @@ def test_duplicate_entry():
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Agency')]"))
     )
-    time.sleep(1)
-        
+
     time.sleep(5)
     agency_name_ok = is_duplicate_error_displayed("agn_name")
     website_ok = is_duplicate_error_displayed("agn_website")
 
-    if agency_name_ok and website_ok:
+    try:
+        assert agency_name_ok and website_ok, (
+            "❌ Test Case 16 Failed:\n"
+            + (" - Agency Name duplicate error not found or not visible.\n" if not agency_name_ok else "")
+            + (" - Website duplicate error not found or not visible." if not website_ok else "")
+        )
         print("✅ Test Case 16 Passed: Duplicate Agency Name and Website errors are shown.")
-    else:
-        print("❌ Test Case 16 Failed:")
-        if not agency_name_ok:
-            print(" - Agency Name duplicate error not found or not visible.")
-        if not website_ok:
-            print(" - Website duplicate error not found or not visible.")
-            
+    
+    except AssertionError as ae:
+        print(str(ae))
+
 # TEST CASE 17:Invalid Website Link Format
 def test_invalid_website_link():
     print("\n/********* TEST CASE 17: Invalid Website Link *********/")
@@ -293,15 +296,12 @@ def test_invalid_website_link():
 
     # Check for error message
     try:
-        error_elem = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, "//p[contains(text(), 'Please enter a valid website URL.')]")
-            )
-        )
-        if error_elem.is_displayed():
+        error_elem = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Please enter a valid website URL.')]")))
+        try:
+            assert error_elem.is_displayed(), "❌ Test Case 17 Failed: Error message not visible."
             print("✅ Test Case 17 Passed: Invalid website URL error appeared.")
-        else:
-            print("❌ Test Case 17 Failed: Error message not visible.")
+        except AssertionError as ae:
+            print(str(ae))
     except:
         print("❌ Test Case 17 Failed: Validity error message not found.")
 
@@ -311,10 +311,7 @@ def test_invalid_field_formats():
 
     long_input = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo"
 
-    # Reset and set agency name
-    agency_name_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "agn_name"))
-    )
+    agency_name_input = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "agn_name")))
     agency_name_input.send_keys(Keys.CONTROL + "a")
     agency_name_input.send_keys(Keys.DELETE)
     agency_name_input.send_keys("New Name")
@@ -350,18 +347,20 @@ def test_invalid_field_formats():
     }
 
     all_passed = True
-
     for field_id, expected_text in expected_errors.items():
         try:
             field_elem = driver.find_element(By.ID, field_id)
             grandparent = field_elem.find_element(By.XPATH, "./ancestor::div[2]")
             error_elem = grandparent.find_element(By.CSS_SELECTOR, "p.text-error")
 
-            if expected_text in error_elem.text and error_elem.is_displayed():
-                print(f"✅ {field_id}: Correct error message displayed.")
-            else:
-                print(f"❌ {field_id}: Incorrect or missing error message.")
-                all_passed = False
+            assert error_elem.is_displayed(), f"❌ {field_id}: Error message not visible."
+            assert expected_text in error_elem.text, f"❌ {field_id}: Incorrect error message. Expected to find: '{expected_text}'"
+
+            print(f"✅ {field_id}: Correct error message displayed.")
+
+        except AssertionError as ae:
+            print(str(ae))
+            all_passed = False
         except Exception as e:
             print(f"❌ {field_id}: Error message not found. Exception: {e}")
             all_passed = False
@@ -460,13 +459,12 @@ def test_valid_entry_addition():
             "agency_head": cells[2].text.strip(),
             "website": cells[3].text.strip()
         }
-
-        if actual_values == expected_values:
+        try:
+            assert actual_values == expected_values, "❌ Test Case 19 Failed: Data mismatch in one or more columns."
             print("✅ Test Case 19 Passed: All values matched in the identified row.")
-        else:
-            print("❌ Test Case 19 Failed: Data mismatch in one or more columns.")
-            for key in expected_values:
-                print(f" - {key.capitalize()}: expected '{expected_values[key]}', got '{actual_values[key]}'")
+
+        except AssertionError as ae:
+            print(str(ae))
     else:
         print("❌ Test Case 19 Failed: Could not find row with alias 'ASTIDEMO'")
 
@@ -509,7 +507,7 @@ def update_recent_agency_entry():
     print("\n\n/********* TEST CASE 21: UPDATE Recent Agency Entry *********/")
     
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//table//tbody/tr")))
-
+    time.sleep(5)
     rows = driver.find_elements(By.XPATH, "//table//tbody/tr")
     target_row = None
     
@@ -610,16 +608,27 @@ def update_recent_agency_entry():
         "agency_head": "T_FN_ T_MI. TM_SN_ TM_SFX_",
         "website": "https://websiteReTest.gov.ph/"
     }
+    #
+    try:
+        assert (
+            alias_val == expected_values["alias"] and
+            agency_name_val == expected_values["agency_name"] and
+            agency_head_val == expected_values["agency_head"] and
+            website_val == expected_values["website"]
+        ), "❌ Test Case 21 Failed: One or more values did not update correctly."
 
-    if (
-        alias_val == expected_values["alias"] and
-        agency_name_val == expected_values["agency_name"] and
-        agency_head_val == expected_values["agency_head"] and
-        website_val == expected_values["website"]
-    ):
         print("✅ Test Case 21 Passed: Agency updated and reflected correctly in the table.")
-    else:
-        print("❌ Test Case 21 Failed: One or more values did not update correctly.")
+
+    except AssertionError as ae:
+        print(str(ae))
+        if alias_val != expected_values["alias"]:
+            print(f" - Alias mismatch: expected '{expected_values['alias']}', got '{alias_val}'")
+        if agency_name_val != expected_values["agency_name"]:
+            print(f" - Agency Name mismatch: expected '{expected_values['agency_name']}', got '{agency_name_val}'")
+        if agency_head_val != expected_values["agency_head"]:
+            print(f" - Agency Head mismatch: expected '{expected_values['agency_head']}', got '{agency_head_val}'")
+        if website_val != expected_values["website"]:
+            print(f" - Website mismatch: expected '{expected_values['website']}', got '{website_val}'")
 
 # TEST CASE 22: Delete Entry with agency code 'ASTIDEMO'
 def delete_recent_agency_entry():
@@ -719,14 +728,12 @@ def delete_recent_agency_entry():
         row.find_elements(By.TAG_NAME, "td")[0].text.strip()
         for row in rows if row.find_elements(By.TAG_NAME, "td")
     ]
-
-    if alias_to_delete:
-        if alias_to_delete not in remaining_aliases:
-            print(f"✅ Test Case 22 Passed: '{alias_to_delete}' entry successfully deleted from the table.")
-        else:
-            print(f"❌ Test Case 22 Failed: '{alias_to_delete}' still found in the table.")
-    else:
-        print("❌ Test Case 22 Failed: Could not capture alias_to_delete for verification.")
+    try:
+        assert alias_to_delete, "❌ Test Case 22 Failed: Could not capture alias_to_delete for verification."
+        assert alias_to_delete not in remaining_aliases, f"❌ Test Case 22 Failed: '{alias_to_delete}' still found in the table."
+        print(f"✅ Test Case 22 Passed: '{alias_to_delete}' entry successfully deleted from the table.")
+    except AssertionError as ae:
+        print(str(ae))
 
     print("/********* END OF THE TEST *********/")
 

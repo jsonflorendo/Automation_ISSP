@@ -92,7 +92,6 @@ def test_search_functionality():
     except AssertionError as ae:
         print(str(ae))
 
-
 # Test Case 2: Add New Button and Modal
 def test_add_new_button():
     print("\nTest Case 2: Add New Button")
@@ -146,7 +145,6 @@ def test_funding_source_code_title():
     except AssertionError as ae:
         print(str(ae))
     
-
 # Test Case 5: Funding Source Column Title
 def test_funding_source_title():
     print("\nTest Case 5: Checking Funding Source Column Title")
