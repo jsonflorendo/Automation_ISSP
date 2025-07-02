@@ -1,9 +1,9 @@
-from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
 import sys
 import time
 
@@ -11,12 +11,11 @@ sys.path.append('../Automation_ISSP')
 from Login.login import login, driver
 login() 
 
-wait = WebDriverWait(driver, 15)
 
+wait = WebDriverWait(driver, 15)
 time.sleep(3)
 if len(driver.window_handles) > 1:
     driver.switch_to.window(driver.window_handles[-1])
-
 
 driver.get("http://10.10.99.23/library")
 print("Reached the Library panel.")
@@ -33,8 +32,6 @@ def main():
     return_to_user_accounts_tab()
     time.sleep(5)
     test_search_functionality()                 # Test Case 1: Search
-    time.sleep(5)
-    return_to_user_accounts_tab()   
     time.sleep(5)
     test_add_new_button()                       # Test Case 2: 'Add New' Button 
     time.sleep(5)
@@ -72,41 +69,47 @@ def test_search_functionality():
         By.XPATH, "//button[.//*[name()='svg' and contains(@data-icon, 'magnifying-glass')]]"
     )))
 
-    if search_icon.is_displayed() and search_input.is_displayed():
+    try:
+        assert search_icon.is_displayed() and search_input.is_displayed(), "❌ Test Case 1 FAILED: Search elements not displayed properly"
         print("✅ Search icon and input field are displayed")
+
         search_input.send_keys("test search")
         time.sleep(1)
         search_input.clear()
         time.sleep(1)
 
         driver.refresh()
-        time.sleep(2)
-        print("✅ Search functionality working and page refreshed")
-    else:
-        print("❌ Search elements not displayed properly")
+        print("✅ Test Case 1 PASSED: Search input worked and page was refreshed")
+
+    except AssertionError as ae:
+        print(str(ae))
 
 # Test Case 2: 'Add New' Button 
 def test_add_new_button():
     print("\nTest Case 2: Add New Button")
-
-    add_new_btn = wait.until(EC.element_to_be_clickable((
+    time.sleep(2)
+    add_new_button = wait.until(EC.element_to_be_clickable((
         By.XPATH, "//button[contains(@class, 'btn-circular') and .//span[normalize-space()='Add New']]"
     )))
 
-    if add_new_btn.is_displayed():
+    if add_new_button.is_displayed():
         print("✅ Add New button is displayed")
-        add_new_btn.click()
-        time.sleep(5)
+        add_new_button.click()
+        time.sleep(2)
+
         close_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.fa-xmark")))
 
-        if close_button.is_displayed():
+        try:
+            assert close_button.is_displayed(), "❌ Test Case 2 FAILED: X button not displayed"
             close_button.click()
-            time.sleep(5)
-            print("✅ Modal closed successfully using Close button")
-        else:
-            print("❌ Close button not displayed")
+            time.sleep(1)
+            print("✅ Test Case 2 PASSED: Modal closed successfully using X button")
+
+        except AssertionError as ae:
+            print(str(ae))
+
     else:
-        print("❌ Add New button not displayed")
+        print("❌ Test Case 2 FAILED: Add New button not displayed")
 
 def return_to_user_accounts_tab():
     print("\nReturning to User Accounts")
@@ -116,120 +119,147 @@ def return_to_user_accounts_tab():
 
 # Test Case 3: Table Row Hover Effect
 def test_table_row_hover():
-    print("\nTest Case 3: Testing Table Row Hover Effect")
-
-    table_row = wait.until(EC.presence_of_element_located((
-        By.XPATH, "//tr[contains(@class, 'hover:bg-gray-200')]"
-    )))
-
-    if table_row.is_displayed():
-        print("✅ Table row hover effect is working")
-    else:
-        print("❌ Table row not displayed properly")
+    print("\nTest Case 3: Testing Table Row ")
+    table_row = wait.until(EC.presence_of_element_located((By.XPATH, "//tr[contains(@class, 'hover:bg-gray-200')]")))
+    try:
+        assert table_row.is_displayed(), "❌ Test Case 3 FAILED: Table row hover effect not working properly"
+        print("✅ Test Case 3 PASSED: Working table row hover")
+    except AssertionError as ae:
+        print(str(ae))
 
 # Test Case 4: NAME Column Title
 def test_username_title():
     print("\nTest Case 4: Checking NAME Column Title")
     try:
         username_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[1]//div[normalize-space(text())='NAME']")))
-        if username_header.is_displayed():
-            print("✅ NAME column title PASSED")
-        else:
-            print("❌ NAME column title not displayed")
+        assert username_header.is_displayed(), "Test Case 4 FAILED: ❌ NAME column title not displayed"
+        print("✅ Test Case 4 PASSED: NAME column title FOUND")
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
-        print(f"❌ Exception in Test Case 4: {str(e)}")
+        print(f"Test Case 4 FAILED: ❌ Exception in Test Case 4: {str(e)}")
 
 # Test Case 5: AGENCY / OFFICE Column Title
 def test_agency_office_title():
     print("\nTest Case 5: Checking AGENCY / OFFICE  Column Title")
     try:
         agency_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[2][normalize-space()='AGENCY / OFFICE']")))
-        if agency_header.is_displayed():
-            print("✅ AGENCY / OFFICE column title PASSED")
-        else:
-            print("❌ AGENCY / OFFICE column title not displayed")
+        assert agency_header.is_displayed(), "Test Case 5 FAILED: ❌ AGENCY / OFFICE column title NOT FOUND"
+        print("✅ Test Case 5 PASSED: AGENCY / OFFICE column title FOUND")
+    
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
-        print(f"❌ Exception in Test Case 5: {str(e)}")
+        print(f"❌ Test Case 5 FAILED: Exception in Test Case 5: {str(e)}")
 
 # Test Case 6: ACCESS LEVEL Column Title
 def test_access_level_title():
     print("\nTest Case 6: Checking ACCESS LEVEL Column Title")
     try:
-        access_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[3]//div[normalize-space(text())='ACCESS LEVEL']")))
-        if access_header.is_displayed():
-            print("✅ ACCESS LEVEL column title PASSED")
-        else:
-            print("❌ ACCESS LEVEL column title not displayed")
+        access_level_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[3]//div[normalize-space(text())='ACCESS LEVEL']")))
+        assert access_level_header.is_displayed(), "❌ Test Case 6 FAILED: ACCESS LEVEL column title NOT FOUND"
+        print("✅ Test Case 6 PASSED: ACCESS LEVEL column title FOUND")
+    
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
-        print(f"❌ Exception in Test Case 6: {str(e)}")
+        print(f"❌ Test Case 6 FAILED: Exception in Test Case 6: {str(e)}")
 
 # Test Case 7: EMAIL Column Title
 def test_email_title():
     print("\nTest Case 7: Checking EMAIL  Column Title")
     try:
         email_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[4][normalize-space()='EMAIL']")))
-        if email_header.is_displayed():
-            print("✅ EMAIL column title PASSED")
-        else:
-            print("❌ EMAIL column title not displayed")
+        assert email_header.is_displayed(), "❌ Test Case 7 FAILED: EMAIL column title NOT FOUND"
+        print("✅ Test Case 7 PASSED: EMAIL column title FOUND")
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
-        print(f"❌ Exception in Test Case 7: {str(e)}")
+        print(f"❌ Test Case 7 FAILED: Exception in Test Case 7: {str(e)}")
 
 # Test Case 8: Testing Sort Buttons for NAME
 def test_sort_buttons_name_column():
     print("\nTest Case 8: Testing Sort Buttons for NAME Column")
 
     try:
-        # Locate the sort ↑ button for NAME
-        sort_up = wait.until(EC.presence_of_element_located((
+        # Click ↑ Up sort
+        sort_up = wait.until(EC.element_to_be_clickable((
             By.XPATH, "//thead//td[1]//span[normalize-space()='▲']"
         )))
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_up)
-        print("↥ Clicking Up sort button (NAME)")
+        print("↥ Clicking Up sort button")
         driver.execute_script("arguments[0].click();", sort_up)
         time.sleep(2)
 
-        # Locate the sort ↓ button for NAME
-        sort_down = wait.until(EC.presence_of_element_located((
+        rows_up = driver.find_elements(By.XPATH, "//tbody/tr/td[1]")
+        categories_up = [r.text.strip().lower() for r in rows_up]
+
+        assert categories_up == sorted(categories_up, reverse=True), f"❌ Test Case 8 FAILED: Up sort did not sort descending → {categories_up}"
+        print("✅ Test Case 8 PASSED: Up sort sorted NAME descending") 
+
+        # Click ↓ Down sort
+        sort_down = wait.until(EC.element_to_be_clickable((
             By.XPATH, "//thead//td[1]//span[normalize-space()='▼']"
         )))
-        print("↧ Clicking Down sort button (NAME)")
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_down)
+        print("↧ Clicking Down sort button")
         driver.execute_script("arguments[0].click();", sort_down)
         time.sleep(2)
 
-        print("✅ Test Case 8 Passed: NAME sort buttons are working")
+        rows_down = driver.find_elements(By.XPATH, "//tbody/tr/td[1]")
+        categories_down = [r.text.strip().lower() for r in rows_down]
 
+        assert categories_down == sorted(categories_down), f"❌ Test Case 8 FAILED: Down sort did not sort ascending → {categories_down}"
+        print("✅ Test Case 8 PASSED: Down sort sorted NAME ascending")
+
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
-        print(f"❌ Exception in Test Case 8: {str(e)}")
+        print(f"❌ Test Case 8 FAILED due to unexpected error: {str(e)}")
 
 # Test Case 9: Testing Sort Buttons for ACCESS LEVEL
 def test_sort_buttons_access_level_column():
     print("\nTest Case 9: Testing Sort Buttons for ACCESS LEVEL Column")
 
     try:
-        # Locate the sort ↑ button for ACCESS LEVEL
-        sort_up = wait.until(EC.presence_of_element_located((
+        # Click ↑ Up sort
+        sort_up = wait.until(EC.element_to_be_clickable((
             By.XPATH, "//thead//td[3]//span[normalize-space()='▲']"
         )))
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_up)
-        print("↥ Clicking Up sort button (ACCESS LEVEL)")
+        print("↥ Clicking Up sort button")
         driver.execute_script("arguments[0].click();", sort_up)
         time.sleep(2)
 
-        # Locate the sort ↓ button for ACCESS LEVEL
-        sort_down = wait.until(EC.presence_of_element_located((
+        rows_up = driver.find_elements(By.XPATH, "//tbody/tr/td[3]")
+        categories_up = [r.text.strip().lower() for r in rows_up]
+
+        assert categories_up == sorted(categories_up), f"❌ Test Case 9 FAILED: Up sort did not sort asecending → {categories_up}"
+        print("✅ Test Case 9 PASSED: Up sort sorted ACCESS LEVEL asecending") 
+
+        # Click ↓ Down sort
+        sort_down = wait.until(EC.element_to_be_clickable((
             By.XPATH, "//thead//td[3]//span[normalize-space()='▼']"
         )))
-        print("↧ Clicking Down sort button (ACCESS LEVEL)")
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_down)
+        print("↧ Clicking Down sort button")
         driver.execute_script("arguments[0].click();", sort_down)
         time.sleep(2)
 
-        print("✅ Test Case 9 Passed: ACCESS LEVEL sort buttons are working")
-
+        rows_down = driver.find_elements(By.XPATH, "//tbody/tr/td[3]")
+        categories_down = [r.text.strip().lower() for r in rows_down]
+        
+        assert categories_down == sorted(categories_down, reverse=True), f"❌ Test Case 9 FAILED: Down sort did not sort descending → {categories_down}"
+        print("✅ Test Case 9 PASSED: Down sort sorted ACCESS LEVEL descending")
+        
+        # Revert to default order
+        time.sleep(5)
+        driver.execute_script("arguments[0].click();", sort_up)
+        time.sleep(5)
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
-        print(f"❌ Exception in Test Case 9: {str(e)}")
+        print(f"❌ Test Case 9 FAILED due to unexpected error: {str(e)}")
 
 # Test Case 10: Store First Row Data
 def test_click_first_user_row():
@@ -279,7 +309,6 @@ def test_click_first_user_row():
         print(f"❌ Exception in Test Case 10: {str(e)}")
         return None, None, None, None
 
-
 # Test Case 11: Compare first row data to the contents of its modal
 def test_first_user_fields_match_modal(full_name_input, agency_text, selected_level, email_value):
     print("\nTest Case 11: Comparing First Row Values with Modal Inputs")
@@ -288,10 +317,10 @@ def test_first_user_fields_match_modal(full_name_input, agency_text, selected_le
         first_row = wait.until(EC.presence_of_element_located((By.XPATH, "//tbody/tr[1]")))
 
         # Extract column values from first table row
-        table_name   = "Santos, Girlie S."
-        table_agency = ""
-        table_level  = "IS Planner"
-        table_email  = "sjjinahon@gmail.com"
+        table_name   = first_row.find_element(By.XPATH, "./td[1]").text.strip()
+        table_agency = first_row.find_element(By.XPATH, "./td[2]").text.strip()     # Not included in assertion due to value difference when there's no vale for agency col (bug)
+        table_level  = first_row.find_element(By.XPATH, "./td[3]").text.strip()
+        table_email  = first_row.find_element(By.XPATH, "./td[4]").text.strip()
 
         # Assertions
         assert full_name_input == table_name,   f"❌ NAME mismatch: '{full_name_input}' != '{table_name}'"
@@ -303,7 +332,6 @@ def test_first_user_fields_match_modal(full_name_input, agency_text, selected_le
     except Exception as e:
         print(f"❌ Exception in Test Case 11: {str(e)}")
         raise
-
 
 if __name__ == "__main__":
     main()

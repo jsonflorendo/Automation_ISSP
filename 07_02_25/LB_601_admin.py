@@ -59,7 +59,7 @@ def test_user_accounts_add_modal(driver):
         print("❌ Add New button not found or not clickable.")
         return
 
-    time.sleep(10)
+    time.sleep(5)
 
     try:
         elements_to_check = [
@@ -87,11 +87,14 @@ def test_user_accounts_add_modal(driver):
         return
 
     for index, (element, description) in enumerate(elements_to_check, start=1):
-        if element and element.is_displayed():
-            print(f"✅ Test Case {index} Passed: {description} appeared.")
-        else:
-            print(f"❌ Test Case {index} Failed: {description} doesn't appear.")
+        try:
+            assert element and element.is_displayed(), f"❌ Test Case {index} Failed: {description} not found"
+            print(f"✅ Test Case {index}: {description} found successfully")
+        except AssertionError as ae:
+            print(str(ae))
         time.sleep(1)
+
+    
 
 # # Test 19: All inputs left with empty fields
 def test_required_field_errors(driver):
@@ -137,11 +140,13 @@ def test_required_field_errors(driver):
         except Exception as e:
             print(f"❌ Error message for field '{field_id}' not found. Exception: {e}")
             all_errors_found = False
-
-    if all_errors_found:
+    try:
+        assert all_errors_found, "❌ Test Case 19 Failed: Some required field errors are missing or incorrect."
         print("✅ Test Case 19 Passed: All required field errors were found and correct.")
-    else:
-        print("❌ Test Case 19 Failed: Some required field errors are missing or incorrect.")
+    
+    except AssertionError as ae:
+        print(str(ae))
+
 
 # Test 20: SUCCESSFUL TEST CASE
 def test_add_user_account_success(driver):
@@ -232,12 +237,13 @@ def test_add_user_account_success(driver):
             if cells and cells[0].text.strip() == "surnameTest, firstNameTest X. II":
                 target_row = row
                 break
+        
+        assert target_row, "❌ Test Case 20 Failed: Could not find row with 'surnameTest, firstNameTest X. II'"
+        result = target_row.find_element(By.TAG_NAME, "td").text.strip()
+        print(f"✅ Test Case 20 Passed: Found row with: '{result}'")
 
-        if target_row:
-            result = target_row.find_element(By.TAG_NAME, "td").text.strip()
-            print(f"✅ Test Case 20 Passed: Found row with: '{result}'")
-        else:
-            print("❌ Test Case 20 Failed: Could not find row with 'surnameTest, firstNameTest X. II'")
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
         print(f"❌ Error during table lookup: {e}")
 
@@ -329,13 +335,13 @@ def test_update_user_account(driver):
             if cells and cells[0].text.strip() == "surnameRetest, firstNameRetest X. II":
                 updated_row = row
                 break
+        
+        assert updated_row, "❌ Test Case 21 Failed: Could not find updated row with 'surnameRetest, firstNameRetest X. II'"
+        result = updated_row.find_element(By.TAG_NAME, "td").text.strip()
+        print(f"✅ Test Case 21 Passed: Found updated row: '{result}'")
 
-        if updated_row:
-            result = updated_row.find_element(By.TAG_NAME, "td").text.strip()
-            print(f"✅ Test Case 21 Passed: Found updated row: '{result}'")
-        else:
-            print("❌ Test Case 21 Failed: Could not find updated row with 'surnameRetest, firstNameRetest X. II'")
-
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
         print(f"❌ Error during search verification: {e}")
 
@@ -440,11 +446,11 @@ def test_delete_user_account(driver):
             row.find_elements(By.TAG_NAME, "td")[0].text.strip() == "surnameRetest, firstNameRetest X. II"
             for row in rows_after
         )
+        assert still_exists, "✅ Test Case 22 Passed: Item successfully deleted."
+        print("❌ Test Case 22 Failed: Item was not deleted.")
 
-        if still_exists:
-            print("❌ Test Case 22 Failed: Item was not deleted.")
-        else:
-            print("✅ Test Case 22 Passed: Item successfully deleted.")
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
         print(f"❌ Error during final validation: {e}")
 
