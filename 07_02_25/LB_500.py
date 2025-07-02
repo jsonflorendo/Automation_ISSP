@@ -64,42 +64,47 @@ def test_search_functionality():
         By.XPATH, "//button[.//*[name()='svg' and contains(@data-icon, 'magnifying-glass')]]"
     )))
 
-    if search_icon.is_displayed() and search_input.is_displayed():
+    try:
+        assert search_icon.is_displayed() and search_input.is_displayed(), "❌ Test Case 1 FAILED: Search elements not displayed properly"
         print("✅ Search icon and input field are displayed")
+
         search_input.send_keys("test search")
         time.sleep(1)
         search_input.clear()
         time.sleep(1)
 
         driver.refresh()
-        time.sleep(2)
-        print("✅ Search functionality working and page refreshed")
-    else:
-        print("❌ Search elements not displayed properly")
+        print("✅ Test Case 1 PASSED: Search input worked and page was refreshed")
+
+    except AssertionError as ae:
+        print(str(ae))
 
 # Test Case 2: 'Add New' Button 
 def test_add_new_button():
     print("\nTest Case 2: Add New Button")
 
-    add_new_btn = wait.until(EC.element_to_be_clickable((
+    add_new_button = wait.until(EC.element_to_be_clickable((
         By.XPATH, "//button[contains(@class, 'btn-circular') and .//span[normalize-space()='Add New']]"
     )))
 
-    if add_new_btn.is_displayed():
+    if add_new_button.is_displayed():
         print("✅ Add New button is displayed")
-        add_new_btn.click()
+        add_new_button.click()
         time.sleep(1.5)
 
         close_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.fa-xmark")))
 
-        if close_button.is_displayed():
+        try:
+            assert close_button.is_displayed(), "❌ Test Case 2 FAILED: X button not displayed"
             close_button.click()
             time.sleep(1)
-            print("✅ Modal closed successfully using X button")
-        else:
-            print("❌ Close button not displayed")
+            print("✅ Test Case 2 PASSED: Modal closed successfully using X button")
+
+        except AssertionError as ae:
+            print(str(ae))
+
     else:
-        print("❌ Add New button not displayed")
+        print("❌ Test Case 2 FAILED: Add New button not displayed")
 
 def return_to_ict_items_tab():
     print("\nReturning to ICT Items")
@@ -109,26 +114,25 @@ def return_to_ict_items_tab():
 
 # Test Case 3: Table Row Hover Effect
 def test_table_row_hover():
-    print("\nTest Case 3: Testing Table Row Hover Effect")
-
-    table_row = wait.until(EC.presence_of_element_located((
-        By.XPATH, "//tr[contains(@class, 'hover:bg-gray-200')]"
-    )))
-
-    if table_row.is_displayed():
-        print("✅ Table row hover effect is working")
-    else:
-        print("❌ Table row not displayed properly")
+    print("\nTest Case 3: Testing Table Row ")
+    table_row = wait.until(EC.presence_of_element_located((By.XPATH, "//tr[contains(@class, 'hover:bg-gray-200')]")))
+    try:
+        assert table_row.is_displayed(), "❌ Test Case 3 FAILED: Table row hover effect not working properly"
+        print("✅ Test Case 3 PASSED: Working table row hover")
+    except AssertionError as ae:
+        print(str(ae))
 
 # Test Case 4: ICT ITEM  Column Title
 def test_ict_item_col_title():
     print("\nTest Case 4: Checking ICT ITEMS Column Title")
     try:
         ict_item_header = wait.until(EC.presence_of_element_located((By.XPATH, "//thead//td[1]//div[normalize-space()='ICT ITEM']")))
-        if ict_item_header.is_displayed():
-            print("✅ ICT ITEM Column title PASSED")
-        else:
-            print("❌ ICT ITEM Column title not displayed")
+        
+        assert ict_item_header.is_displayed(), "❌ ICT ITEM Column title NOT FOUND"
+        print("✅ ICT ITEM Column title FOUND")
+
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
         print(f"❌ Exception in Test Case 4: {str(e)}")
 
@@ -139,11 +143,11 @@ def test_est_cost_col_title():
         est_cost_header = wait.until(EC.presence_of_element_located((
             By.XPATH, "//thead//td[2][normalize-space()='ESTIMATED COST PER UOM']"
         )))
+        assert est_cost_header.is_displayed(), "❌ ESTIMATED COST PER UOM Column title NOT FOUND"
+        print("✅ ESTIMATED COST PER UOM Column title FOUND")
 
-        if est_cost_header.is_displayed():
-            print("✅ ESTIMATED COST PER UOM Column title PASSED")
-        else:
-            print("❌ ESTIMATED COST PER UOM Column title not displayed")
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
         print(f"❌ Exception in Test Case 5: {str(e)}")
 
@@ -154,27 +158,52 @@ def test_specs_col_title():
         specs_header = wait.until(EC.presence_of_element_located((
             By.XPATH, "//thead//td[3][normalize-space()='SPECIFICATIONS']"
         )))
-        if specs_header.is_displayed():
-            print("✅ SPECIFICATIONS Column title PASSED")
-        else:
-            print("❌ SPECIFICATIONS Column title not displayed")
+        assert specs_header.is_displayed(), "❌ SPECIFICATIONS Column title not displayed"
+        print("✅ SPECIFICATIONS Column title PASSED")
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
         print(f"❌ Exception in Test Case 6: {str(e)}")
 
 # Test Case 7: Checking Sort Buttons for Funding Source Code
 def ict_items_sort_btn():
     print("\nTest Case 7: Checking Sort Buttons for ICT Items")
+
     try:
-        sort_container = wait.until(EC.element_to_be_clickable((By.XPATH, "//thead//td[1]//div[contains(@class,'flex-col')]")))
-        print("Clicking to sort ascending (▲)")
-        sort_container.click()
-        time.sleep(3)
-        print("Clicking to sort descending (▼)")
-        sort_container.click()
-        time.sleep(3)
-        print("✅ Sort buttons are working")
+        # Click ↑ Up sort
+        sort_up = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//thead//td[1]//span[normalize-space()='▲']"
+        )))
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_up)
+        print("↥ Clicking Up sort button")
+        driver.execute_script("arguments[0].click();", sort_up)
+        time.sleep(2)
+
+        rows_up = driver.find_elements(By.XPATH, "//tbody/tr/td[1]")
+        categories_up = [r.text.strip().lower() for r in rows_up]
+
+        assert categories_up == sorted(categories_up, reverse=True), f"❌ Test Case 5 FAILED: Up sort did not sort descending → {categories_up}"
+        print("✅ Test Case 5 PASSED: Up sort sorted ICT ITEM  descending") 
+
+        # Click ↓ Down sort
+        sort_down = wait.until(EC.element_to_be_clickable((
+            By.XPATH, "//thead//td[1]//span[normalize-space()='▼']"
+        )))
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", sort_down)
+        print("↧ Clicking Down sort button")
+        driver.execute_script("arguments[0].click();", sort_down)
+        time.sleep(2)
+
+        rows_down = driver.find_elements(By.XPATH, "//tbody/tr/td[1]")
+        categories_down = [r.text.strip().lower() for r in rows_down]
+
+        assert categories_down == sorted(categories_down), f"❌ Test Case 7 FAILED: Down sort did not sort ascending → {categories_down}"
+        print("✅ Test Case 7 PASSED: Down sort sorted ICT ITEM  ascending")
+
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
-        print(f"❌ Sort button test failed: {str(e)}")
+        print(f"❌ Test Case 7 FAILED due to unexpected error: {str(e)}")
 
 # Test Case 8: Clicking 'Cloud Live Site' Row and Verifying Modal
 def test_click_cloud_live_site_row():
@@ -219,17 +248,17 @@ def test_ict_item(itm_name_input, itm_cost_input, itm_desc_input):
         cost_match = modal_item_cost in table_item_cost or table_item_cost in modal_item_cost
         specs_match = modal_item_specs.startswith(table_item_specs[:20])  # fuzzy match start
 
-        if name_match and cost_match and specs_match:
-            print("✅ Test Case 9 Passed: Modal values match table row content")
-        else:
-            print("❌ Test Case 9 Failed:")
-            if not name_match:
-                print("   - ITEM NAME mismatch")
-            if not cost_match:
-                print("   - COST mismatch")
-            if not specs_match:
-                print("   - SPECIFICATIONS mismatch")
+        
+        assert name_match and cost_match and specs_match, (
+            "❌ Test Case 9 Failed:\n" +
+            ("" if name_match else "   - ITEM NAME mismatch\n") +
+            ("" if cost_match else "   - COST mismatch\n") +
+            ("" if specs_match else "   - SPECIFICATIONS mismatch")
+        )
+        print("✅ Test Case 9 Passed: Modal values match table row content")
 
+    except AssertionError as ae:
+        print(str(ae))
     except Exception as e:
         print(f"❌ Exception in Test Case 9: {str(e)}")
 

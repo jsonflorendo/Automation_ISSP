@@ -221,6 +221,7 @@ def test_ict_item_category(cat_name_input):
     except Exception as e:
         print(f"❌ Exception in Test Case 7: {str(e)}")
 
+
 if __name__ == "__main__":
     main()
 

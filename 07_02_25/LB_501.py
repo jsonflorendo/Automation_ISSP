@@ -37,6 +37,16 @@ except (NoSuchElementException):
     print("Add New button not found or not clickable.")
 time.sleep(10)
 
+
+def check_displayed(element, index, description):
+    try:
+        assert element and element.is_displayed(), f"❌ Test Case {index} Failed: {description} not found"
+        print(f"✅ Test Case {index}: {description} found successfully")
+    except AssertionError as ae:
+        print(str(ae))
+    time.sleep(1)
+
+
 def main():
     test_ict_item_modal_fields()            # Test Cases 1-19 : ICT Item Modal Field Visibility
     time.sleep(5)
@@ -56,12 +66,6 @@ def main():
 def test_ict_item_modal_fields():
     print("\n/********* TEST CASES 1–19: ICT Item Modal Field Visibility *********/")
     
-    def check_displayed(element, test_case_num, description, positive_msg=None, negative_msg=None):
-        if element and element.is_displayed():
-            print(f"✅ Test Case {test_case_num} Passed: {positive_msg or description} is visible.")
-        else:
-            print(f"❌ Test Case {test_case_num} Failed: {negative_msg or description} is not visible.")
-
     # Wait for all elements first
     modal_title              = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'ICT Item')]")))
     ict_category_label       = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='Item Category']")))
@@ -107,8 +111,8 @@ def test_ict_item_modal_fields():
     ]
 
     # Run test checks
-    for element, num, desc, *messages in test_cases:
-        check_displayed(element, num, desc, *messages)
+    for element, num, desc, *message in test_cases:
+        check_displayed(element, num, desc)
 
 def test_ict_item_required_field_errors():
     print("\n/********* ICT Items (CREATE): ERROR TEST CASES *********/")
@@ -152,10 +156,11 @@ def test_ict_item_required_field_errors():
             print(f"❌ Error message for field '{field_id}' not found: {str(e)}")
             all_errors_found = False
 
-    if all_errors_found:
+    try:
+        assert all_errors_found, "❌ Test Case 20 Failed: One or more required error messages are missing or incorrect."
         print("✅ Test Case 20 Passed: All required field error messages displayed correctly.")
-    else:
-        print("❌ Test Case 20 Failed: One or more required error messages are missing or incorrect.")
+    except AssertionError as ae:
+        print(str(ae))
 
 def test_duplicate_ict_item():
     print("\n/********* TEST CASE 21: Duplicate ICT Item Registration *********/")
@@ -228,31 +233,22 @@ def test_duplicate_ict_item():
     except:
         item_name_ok = False
 
-    if item_name_ok:
-        print("✅ Test Case 21 Passed: Duplicate Item Name error is shown.")
+    assert item_name_ok, "❌ Test Case 21 Failed: Item Name duplicate error not found or not visible."
+    print("✅ Test Case 21 Passed: Duplicate Item Name error is shown.")
+    
+    # Clear inputs
+    item_name_input.clear()
+    item_specs_desc.clear()
+    est_cost_input.clear()
 
-        item_name_input.clear()
-        item_specs_desc.clear()
-        est_cost_input.clear()
+    Select(driver.find_element(By.ID, "rr_allot_class")).select_by_index(0)
 
-        try:
-            Select(driver.find_element(By.ID, "rr_allot_class")).select_by_index(0)
-        except:
-            pass
+    parent_item_input = driver.find_element(By.XPATH, "//div[@id='itm_parent']//input[@class='vs__search']")
+    parent_item_input.clear()
 
-        try:
-            parent_item_input = driver.find_element(By.XPATH, "//div[@id='itm_parent']//input[@class='vs__search']")
-            parent_item_input.clear()
-        except:
-            pass
+    unit_measure_input = driver.find_element(By.XPATH, "//input[contains(@class, 'vs__search') and @type='search']")
+    unit_measure_input.clear()
 
-        try:
-            unit_measure_input = driver.find_element(By.XPATH, "//input[contains(@class, 'vs__search') and @type='search']")
-            unit_measure_input.clear()
-        except:
-            pass
-    else:
-        print("❌ Test Case 21 Failed: Item Name duplicate error not found or not visible.")
     time.sleep(5)
 
 def test_add_ict_item_successfully():
@@ -348,13 +344,14 @@ def test_add_ict_item_successfully():
         if cells and cells[0].text.strip() == "ITEM_NAME_TEST":
             target_row = row
             break
-
-    if target_row:
+    
+    try:
+        assert target_row, "❌ Test Case 22 Failed: Could not find row with 'ITEM_NAME_TEST'"
         category_val = target_row.find_element(By.TAG_NAME, "td").text.strip()
         print(f"✅ Test Case 22 Passed: Clicked row with category: '{category_val}'")
-    else:
-        print("❌ Test Case 22 Failed: Could not find row with 'ITEM_NAME_TEST'")
-    time.sleep(5)
+        time.sleep(5)
+    except AssertionError as ae:
+        print(str(ae))
         
 def test_update_ict_item():
     print("/*********  ICT Items (UPDATE) *********/")
@@ -441,12 +438,13 @@ def test_update_ict_item():
             if cells and cells[0].text.strip() == "ITEM_NAME_RETEST":
                 target_row = row
                 break
-
-        if target_row:
-            category_val = target_row.find_element(By.TAG_NAME, "td").text.strip()
-            print(f"✅ Test Case 23 Passed: Updated row with category: '{category_val}'")
-        else:
-            print("❌ Test Case 23 Failed: Could not find row with 'ITEM_NAME_RETEST'")
+        
+        assert target_row, "❌ Test Case 23 Failed: Could not find row with 'ITEM_NAME_RETEST'"
+        category_val = target_row.find_element(By.TAG_NAME, "td").text.strip()
+        print(f"✅ Test Case 23 Passed: Updated row with category: '{category_val}'")
+        
+    except AssertionError as ae:
+        print(str(ae))
 
     except Exception as e:
         print(f"❌ Test Case 23 Failed due to exception: {str(e)}")
@@ -514,7 +512,7 @@ def test_delete_ict_item():
             EC.element_to_be_clickable((By.XPATH, "//ul/li[4]//label[contains(text(), 'ICT Items')]"))
         )
         ict_items_tab.click()
-
+        time.sleep(5)
         search_input = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//input[@type='text' and contains(@class, 'search-width')]"))
         )
@@ -527,11 +525,9 @@ def test_delete_ict_item():
             row.find_elements(By.TAG_NAME, "td") and row.find_elements(By.TAG_NAME, "td")[0].text.strip() == "ITEM_NAME_RETEST"
             for row in rows_after
         )
-
-        if still_exists:
-            print("❌ Test Case 24 Failed: Item was not deleted.")
-        else:
-            print("✅ Test Case 24 Passed: Item successfully deleted.")
+        time.sleep(5)
+        assert still_exists, "✅ Test Case 24 Passed: Item successfully deleted."
+        print("❌ Test Case 24 Failed: Item was not deleted.")
 
     except Exception as e:
         print(f"❌ Test Case 24 Failed due to exception: {str(e)}")
