@@ -7,13 +7,12 @@ from selenium.common.exceptions import NoSuchElementException
 
 import sys
 import time
+
 sys.path.append('../Automation_ISSP')  
 from Login.login import login, driver
-
 login() 
 
 wait = WebDriverWait(driver, 15)
-
 time.sleep(3)
 if len(driver.window_handles) > 1:
     driver.switch_to.window(driver.window_handles[-1])
@@ -23,13 +22,12 @@ print("Reached the Library panel.")
 driver.execute_script("window.scrollBy(0, 1000);")
 time.sleep(10)
 
+# Navigate to Funding Source tab
 funding_tab = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//ul/li[2]/p[normalize-space()='Funding Source']")))
-
 funding_tab.click()
-print("✅ Test Case 0 Passed: Funding Source tab clicked.")
+print("✅ Test Case 0 PASSED: Funding Source tab clicked.")
 time.sleep(5)
 
-print("/********* FUNDING SOURCE (ADD) *********/")
 add_new_btn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Add New']]")))
 try:
     add_new_btn.click()
@@ -57,6 +55,7 @@ def main():
 
 def test_funding_source_modal_elements(driver, wait):
     print("\nTest Cases 1–4: Funding Source Modal and Labels")
+    
     try:
         elements_to_check = [
             ("//p[contains(@class, 'modal-title') and contains(text(), 'Funding Source')]", "Funding Source modal appeared"),
@@ -68,57 +67,54 @@ def test_funding_source_modal_elements(driver, wait):
         for index, (xpath, description) in enumerate(elements_to_check, start=1):
             try:
                 element = wait.until(EC.visibility_of_element_located((By.XPATH, xpath)))
-                if element.is_displayed():
-                    print(f"✅ Test Case {index} Passed: {description} is visible.")
-                else:
-                    print(f"❌ Test Case {index} Failed: {description} is not visible.")
+                assert element.is_displayed(), f"❌ Test Case {index} FAILED: {description} is not visible."
+                print(f"✅ Test Case {index} PASSED: {description} is visible.")
+            except AssertionError as ae:
+                print(str(ae))
             except Exception as e:
-                print(f"❌ Test Case {index} Failed: {description} not found. Error: {str(e)}")
+                print(f"❌ Test Case {index} FAILED: {description} not found. Error: {str(e)}")
             time.sleep(0.5)
 
-    except Exception as e:
-        print(f"❌ Error during Funding Source modal tests: {str(e)}")
 
-print("/n/**************FUNDING SOURCE (CREATE) *************/")
+    except Exception as e:
+        print(f"❌ Test Case 1-4 FAILED: Error during Funding Source modal tests: {str(e)}")
 
 def test_empty_funding_fields_validation(driver, wait):
     print("\n/***************** TEST CASE 5: Empty entry fields *****************/")
     try:
-        # Clear both fields
         code_input = wait.until(EC.presence_of_element_located((By.ID, "fnd_code")))
         name_input = wait.until(EC.presence_of_element_located((By.ID, "fnd_name")))
 
+        # Clear both fields
         code_input.clear()
         time.sleep(1)
         name_input.clear()
         time.sleep(1)
 
-        # Click Save
         save_button = driver.find_element(By.XPATH, "//button[normalize-space()='Save']")
         save_button.click()
         time.sleep(2)
 
         # Check for error messages
-        error_fnd_code = wait.until(EC.visibility_of_element_located((
-            By.XPATH, "//input[@id='fnd_code']/following-sibling::p[contains(text(), 'required')]"
-        )))
-        error_fnd_name = wait.until(EC.visibility_of_element_located((
-            By.XPATH, "//input[@id='fnd_name']/following-sibling::p[contains(text(), 'required')]"
-        )))
+        error_fnd_code = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@id='fnd_code']/following-sibling::p[contains(text(), 'This field is required.')]")))
+        error_fnd_name = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@id='fnd_name']/following-sibling::p[contains(text(), 'This field is required.')]")))
 
-        if error_fnd_code.is_displayed() and error_fnd_name.is_displayed():
-            print("✅ Test Case 5 Passed: Required field validations displayed.")
-        else:
-            print("❌ Test Case 5 Failed: Required field error missing.")
+        try:
+            assert error_fnd_code.is_displayed() and error_fnd_name.is_displayed(), "❌ Test Case 5 FAILED: One or both required field errors not displayed."
+            print("✅ Test Case 5 PASSED: Required field validations displayed.")
+
+        except AssertionError as ae:
+            print(str(ae))
 
     except Exception as e:
-        print(f"❌ Test Case 5 Failed: Exception occurred during validation test — {str(e)}")
+        print(f"❌ Test Case 5 FAILED: Exception occurred during validation test — {str(e)}")
 
 def test_valid_funding_source_entry(driver, wait):
+    print("/n/**************FUNDING SOURCE (CREATE) *************/")
     print("\n/***************** TEST CASE 6: Valid entry inputs *****************/")
     try:
         time.sleep(2)
-        # Input values
+
         driver.find_element(By.ID, "fnd_code").send_keys("TEST1")
         time.sleep(1)
         driver.find_element(By.ID, "fnd_name").send_keys("Test Funding Source")
@@ -151,11 +147,13 @@ def test_valid_funding_source_entry(driver, wait):
             if cells and cells[0].text.strip() == "TEST1":
                 target_row = cells
                 break
-
-        if target_row and target_row[1].text.strip() == "Test Funding Source":
+        try:
+            assert target_row and target_row[1].text.strip() == "Test Funding Source", \
+                "❌ Test Case 6 Failed: Entry not found or incorrect."
             print("✅ Test Case 6 Passed: Entry appears in table.")
-        else:
-            print("❌ Test Case 6 Failed: Entry not found or incorrect.")
+        except AssertionError as ae:
+            print(str(ae))
+
     except Exception as e:
         print(f"❌ Test Case 6 Failed: Exception occurred — {str(e)}")
 
@@ -176,10 +174,13 @@ def test_cancel_button_closes_modal(driver, wait):
 
         # Check if modal is closed
         modal_closed = not driver.find_elements(By.XPATH, "//p[contains(@class, 'modal-title') and contains(text(), 'Funding Source')]")
-        if modal_closed:
+        
+        try: 
+            assert modal_closed, "❌ Test Case 7 Failed: Modal still visible."
             print("✅ Test Case 7 Passed: Cancel button closed the modal.")
-        else:
-            print("❌ Test Case 7 Failed: Modal still visible.")
+        except AssertionError as ae:
+            print(str(ae))
+        
     except Exception as e:
         print(f"❌ Test Case 7 Failed: Exception occurred — {str(e)}")
 
@@ -243,11 +244,11 @@ def test_update_funding_source_entry(driver, wait, original_code="TEST1", new_co
             if cells and cells[0].text.strip() == new_code and cells[1].text.strip() == new_name:
                 updated = True
                 break
-
-        if updated:
+        try: 
+            assert updated, f"❌ Test Case 8 Failed: Mismatch after update → Code: {new_code}, Name: {new_name} not found."
             print("✅ Test Case 8 Passed: Updated values reflected in table.")
-        else:
-            print(f"❌ Test Case 8 Failed: Mismatch after update → Code: {new_code}, Name: {new_name} not found.")
+        except AssertionError as ae:
+            print(str(ae))
     
     except Exception as e:
         print(f"❌ Test Case 8 Failed: Exception occurred — {str(e)}")
@@ -287,6 +288,7 @@ def test_delete_funding_source_by_code(driver, wait):
         delete_button.click()
         print("✅ Delete button clicked.")
         time.sleep(5)
+        
         # Confirm delete popup
         wait.until(EC.visibility_of_element_located((
             By.XPATH, "//h2[normalize-space()='Are you sure you want to delete this item?']"
@@ -297,6 +299,7 @@ def test_delete_funding_source_by_code(driver, wait):
         confirm_button.click()
         print("✅ Confirm delete clicked.")
         time.sleep(5)
+        
         # Wait for confirmation message
         wait.until(EC.visibility_of_element_located((
             By.XPATH, "//h2[normalize-space()='Funding Source deleted successfully.']"
@@ -317,10 +320,11 @@ def test_delete_funding_source_by_code(driver, wait):
             if (cols := row.find_elements(By.TAG_NAME, "td"))
         )
 
-        if deleted:
+        try: 
+            assert deleted, f"❌ Test Case 9 Failed: 'TEST1-EDITED' still exists in the table."
             print(f"✅ Test Case 9 Passed: 'TEST1-EDITED' entry successfully deleted.")
-        else:
-            print(f"❌ Test Case 9 Failed: 'TEST1-EDITED' still exists in the table.")
+        except AssertionError as ae:
+            print(str(ae))
 
     except Exception as e:
         print(f"❌ Test Case 9 Failed: Exception occurred — {str(e)}")
