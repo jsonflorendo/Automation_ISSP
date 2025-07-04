@@ -203,7 +203,7 @@ def test_ict_item_category(cat_name_input):
     print("\nTest Case 7: Comparing ICT Item Category Value from Modal with Table Row")
 
     try:
-        first_row = wait.until(EC.presence_of_element_located((By.XPATH, "(//tr[contains(@class, 'hover:bg-gray-200')])[4]")))
+        first_row = wait.until(EC.presence_of_element_located((By.XPATH, "(//tr[contains(@class, 'hover:bg-gray-200')])[5]")))
         table_item = first_row.find_element(By.XPATH, ".//td[1]").text.strip()
 
         modal_value = cat_name_input.get_attribute('value').strip()
