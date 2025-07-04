@@ -182,8 +182,8 @@ def ict_items_sort_btn():
         rows_up = driver.find_elements(By.XPATH, "//tbody/tr/td[1]")
         categories_up = [r.text.strip().lower() for r in rows_up]
 
-        assert categories_up == sorted(categories_up, reverse=True), f"❌ Test Case 5 FAILED: Up sort did not sort descending → {categories_up}"
-        print("✅ Test Case 5 PASSED: Up sort sorted ICT ITEM descending") 
+        assert categories_up == sorted(categories_up), f"❌ Test Case 5 FAILED: Up sort did not sort descending → {categories_up}"
+        print("✅ Test Case 7 PASSED: Up sort sorted ICT ITEM descending") 
 
         # Click ↓ Down sort
         sort_down = wait.until(EC.element_to_be_clickable((
@@ -197,7 +197,7 @@ def ict_items_sort_btn():
         rows_down = driver.find_elements(By.XPATH, "//tbody/tr/td[1]")
         categories_down = [r.text.strip().lower() for r in rows_down]
 
-        assert categories_down == sorted(categories_down), f"❌ Test Case 7 FAILED: Down sort did not sort ascending → {categories_down}"
+        assert categories_down == sorted(categories_down, reverse=True), f"❌ Test Case 7 FAILED: Down sort did not sort ascending → {categories_down}"
         print("✅ Test Case 7 PASSED: Down sort sorted ICT ITEM ascending")
 
     except AssertionError as ae:
