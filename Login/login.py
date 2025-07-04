@@ -1,32 +1,30 @@
+from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import ElementNotInteractableException
 import time
 
+driver = webdriver.Chrome()
+driver.maximize_window()
+driver.get("http://10.10.99.23/login")
   
 # Login function
-def login(driver):
+def login():
 
-    try:
-
-        wait = WebDriverWait(driver, 10)
+    try: 
             
-        username_input = "admin@gmail.com"
+        email_input = "admin@gmail.com"
         password_input = "Dost@123"
 
         time.sleep(1)
-        username_field = wait.until(EC.presence_of_element_located((By.ID,"username")))
-        username_field.send_keys(username_input)
+        driver.find_element(By.ID,"email").send_keys(email_input)
 
         time.sleep(1)
-        password_field = wait.until(EC.presence_of_element_located((By.ID,"password")))
-        password_field.send_keys(password_input)
+        driver.find_element(By.ID,"password").send_keys(password_input)
 
         time.sleep(1)
-        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Sign in')]")))
-        login_button.click()
+        driver.find_element(By.XPATH, "//button[contains(text(), 'Sign in')]").click()
+        print("Clicked Sign-in.")
+        time.sleep(5)
 
-    except ElementNotInteractableException as e:
-
-        print(f"Element not interactable: {e}")
+    except Exception as e:
+    
+        print("Error", str(e))
